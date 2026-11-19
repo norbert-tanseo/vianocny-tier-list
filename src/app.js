@@ -29,7 +29,7 @@ const FILMS = [
   { id: 'scrooged', category: 'americke', title: 'Návrat do Vianoc', year: 1988, image: 'https://m.media-amazon.com/images/M/MV5BYWY3ODUyZTQtMTQyZS00ZWIyLTk3M2YtYzU5ZWQ3MTEwZGU1XkEyXkFqcGc%40._V1_.jpg' },
   { id: 'bad-santa', category: 'americke', title: 'Santa je úchyl!', year: 2003, image: 'https://www.originalfilmart.com/cdn/shop/products/BadSanta_2003_original_film_art_5000x.jpg?v=1640389927' },
   { id: 'christmas-story', category: 'americke', title: 'Vianočný príbeh', year: 1983, image: 'https://filmartgallery.com/cdn/shop/files/A-Christmas-Story-Vintage-Movie-Poster-Original_916caa3f_5000x.jpg?v=1771937986' },
-  { id: 'santa-clause-2', category: 'americke', title: 'Santa Claus 2', year: 2002, image: 'https://lumiere-a.akamaihd.net/v1/images/p_thesantaclause2_20499_2edbfa57.jpeg' },
+  { id: 'santa-clause-2', category: 'americke', title: 'Santa Claus 2', year: 2002, image: 'https://i.ebayimg.com/images/g/XjcAAOSwnbZYCqGO/s-l1200.jpg' },
   { id: 'three-wishes', category: 'ceskoslovenske', title: 'Tri oriešky pre Popolušku', year: 1973, image: 'https://image.pmgstatic.com/cache/resized/w663/files/images/film/posters/158/643/158643989_1e887d.jpg' },
   { id: 'with-you-world-fun', category: 'ceskoslovenske', title: 'S tebou ma baví svet', year: 1982, image: 'https://cdn.alza.cz/Foto/imggalery/Image/Article/stmbs%20text.jpg' },
   { id: 'cosy-dens', category: 'ceskoslovenske', title: 'Pelíšky', year: 1999, image: 'https://image.pmgstatic.com/cache/resized/w663/files/images/film/posters/165/049/165049346_5a5d1f.jpg' },

@@ -45,7 +45,6 @@ const FILMS = [
 ];
 
 const WEIGHTS = { S: 5, A: 4, B: 3, C: 2, D: 1 };
-const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1512389142860-9c449e58a543?auto=format&fit=crop&w=500&q=80';
 const filmById = Object.fromEntries(FILMS.map((film) => [film.id, film]));
 const rankingsByCategory = Object.fromEntries(CATEGORIES.map((category) => [category.id, {}]));
 
@@ -75,6 +74,21 @@ const els = {
 function filmsInCategory(categoryId) { return FILMS.filter((film) => film.category === categoryId); }
 function rankings() { return rankingsByCategory[activeCategoryId]; }
 function categoryLabel(categoryId) { return CATEGORIES.find((category) => category.id === categoryId)?.label || categoryId; }
+function escapeSvg(value) { return String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[character])); }
+function posterPlaceholder(film) {
+  const palette = { animaky: ['#0f4a38', '#d8b15e'], americke: ['#8e2638', '#f0c874'], ceskoslovenske: ['#1e5361', '#e4b766'], ostatne: ['#5d2d3d', '#d5b26c'] }[film.category] || ['#123b2e', '#d0a451'];
+  const words = film.title.split(' ');
+  const lines = [];
+  let line = '';
+  words.forEach((word) => {
+    if ((line + ' ' + word).trim().length > 19 && line) { lines.push(line); line = word; }
+    else line = `${line} ${word}`.trim();
+  });
+  if (line) lines.push(line);
+  const titleLines = lines.slice(0, 3).map((text, index) => `<text x="250" y="${245 + index * 34}" text-anchor="middle" fill="#fffaf1" font-family="Arial,sans-serif" font-size="25" font-weight="700">${escapeSvg(text)}</text>`).join('');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="500" height="700" viewBox="0 0 500 700"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${palette[0]}"/><stop offset="1" stop-color="${palette[1]}"/></linearGradient></defs><rect width="500" height="700" rx="24" fill="url(#g)"/><circle cx="80" cy="100" r="42" fill="#fffaf1" opacity=".16"/><circle cx="415" cy="135" r="68" fill="#fffaf1" opacity=".12"/><path d="M55 580 C150 480 350 480 445 580" fill="none" stroke="#fffaf1" stroke-width="3" opacity=".35"/><text x="250" y="78" text-anchor="middle" fill="#fffaf1" font-family="Arial,sans-serif" font-size="17" font-weight="700" letter-spacing="3">VIANOČNÝ FILM</text><text x="250" y="150" text-anchor="middle" fill="#fffaf1" font-family="Georgia,serif" font-size="46">✦</text>${titleLines}<text x="250" y="622" text-anchor="middle" fill="#fffaf1" font-family="Arial,sans-serif" font-size="22" opacity=".9">${film.year}</text><text x="250" y="660" text-anchor="middle" fill="#fffaf1" font-family="Arial,sans-serif" font-size="12" letter-spacing="2" opacity=".75">VIANOČNÝ TIER LIST</text></svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
 
 function renderTabs() {
   els.tabs.innerHTML = CATEGORIES.map((category) => `<button class="category-tab ${category.id === activeCategoryId ? 'is-active' : ''}" type="button" data-category="${category.id}"><strong>${category.label}</strong><small>${category.note}</small></button>`).join('');
@@ -89,7 +103,7 @@ function createFilmCard(film) {
   card.dataset.filmId = film.id;
   card.setAttribute('aria-label', `${film.title}, ${film.year}`);
   card.innerHTML = `<img loading="lazy" src="${film.image}" alt="${film.title} — náhľad" /><span class="card-meta"><strong>${film.title}</strong><small>${film.year}</small></span>`;
-  card.querySelector('img').addEventListener('error', (event) => { event.currentTarget.onerror = null; event.currentTarget.src = FALLBACK_IMAGE; });
+  card.querySelector('img').addEventListener('error', (event) => { event.currentTarget.onerror = null; event.currentTarget.src = posterPlaceholder(film); });
   card.addEventListener('dragstart', (event) => { event.dataTransfer.setData('text/plain', film.id); card.classList.add('is-selected'); });
   card.addEventListener('dragend', () => card.classList.remove('is-selected'));
   card.addEventListener('click', () => {
@@ -150,10 +164,10 @@ function renderPreview() {
   els.voteTotal.textContent = `${allVotes} hlasov`;
   els.preview.innerHTML = CATEGORIES.map((category) => `<article class="preview-card">
     <div class="preview-card-head"><div><span class="section-label">${category.note}</span><h3>${category.label}</h3></div><button class="jump-button" type="button" data-jump="${category.id}">Zoraď</button></div>
-    <div class="top-three">${previewFilms(category.id).map((item, index) => `<button class="top-three-row" type="button" data-jump="${category.id}"><span class="place">${index + 1}</span><img src="${item.film.image}" alt="${item.film.title} — náhľad" /><span class="top-three-title"><strong>${item.film.title}</strong><small>${item.film.year}</small></span><span class="top-three-score">${item.score === null ? '—' : item.score.toFixed(1)}</span></button>`).join('')}</div>
+    <div class="top-three">${previewFilms(category.id).map((item, index) => `<button class="top-three-row" type="button" data-jump="${category.id}"><span class="place">${index + 1}</span><img data-film-id="${item.film.id}" src="${item.film.image}" alt="${item.film.title} — náhľad" /><span class="top-three-title"><strong>${item.film.title}</strong><small>${item.film.year}</small></span><span class="top-three-score">${item.score === null ? '—' : item.score.toFixed(1)}</span></button>`).join('')}</div>
   </article>`).join('');
   els.preview.querySelectorAll('[data-jump]').forEach((button) => button.addEventListener('click', () => { switchCategory(button.dataset.jump); document.querySelector('#zoraď').scrollIntoView({ behavior: 'smooth' }); }));
-  els.preview.querySelectorAll('img').forEach((image) => image.addEventListener('error', (event) => { event.currentTarget.onerror = null; event.currentTarget.src = FALLBACK_IMAGE; }));
+  els.preview.querySelectorAll('img').forEach((image) => image.addEventListener('error', (event) => { event.currentTarget.onerror = null; event.currentTarget.src = posterPlaceholder(filmById[image.dataset.filmId]); }));
 }
 
 function switchCategory(categoryId) {

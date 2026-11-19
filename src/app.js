@@ -88,6 +88,10 @@ function categoryCountLabel(categoryId) {
   const count = categoryCounts[categoryId] || 0;
   return `${count} ${count === 1 ? 'človek' : 'ľudí'}`;
 }
+function categoryVoteLabel(categoryId) {
+  const count = categoryCounts[categoryId] || 0;
+  return count === 1 ? '1 človek hodnotil' : `${count} ľudí hodnotilo`;
+}
 function votedCategories() {
   try { return new Set(JSON.parse(localStorage.getItem(VOTED_STORAGE_KEY) || '[]')); } catch { return new Set(); }
 }
@@ -202,7 +206,7 @@ function previewFilms(categoryId) {
 function renderPreview() {
   els.voteTotal.textContent = `${totalSubmissions} ${totalSubmissions === 1 ? 'hodnotenie' : 'hodnotení'} celkom`;
   els.preview.innerHTML = CATEGORIES.map((category) => `<article class="preview-card">
-    <div class="preview-card-head"><div><span class="section-label">${category.note}</span><h3>${category.label}</h3><small class="category-votes">${categoryCountLabel(category.id)} hodnotilo</small></div><button class="jump-button" type="button" data-jump="${category.id}">Zoraď</button></div>
+    <div class="preview-card-head"><div><span class="section-label">${category.note}</span><h3>${category.label}</h3><small class="category-votes">${categoryVoteLabel(category.id)}</small></div><button class="jump-button" type="button" data-jump="${category.id}">Zoraď</button></div>
     <div class="top-three">${previewFilms(category.id).map((item, index) => `<button class="top-three-row" type="button" data-jump="${category.id}"><span class="place">${index + 1}</span><img data-film-id="${item.film.id}" src="${item.film.image}" alt="${item.film.title} — náhľad" /><span class="top-three-title"><strong>${item.film.title}</strong><small>${item.film.year}</small></span><span class="top-three-score">${item.score === null ? '—' : item.score.toFixed(1)}</span></button>`).join('')}</div>
   </article>`).join('');
   els.preview.querySelectorAll('[data-jump]').forEach((button) => button.addEventListener('click', () => goToBuilder(button.dataset.jump)));

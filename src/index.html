@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="sk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#10231d" />
+    <meta name="description" content="Zoraď svoje obľúbené vianočné filmy. Bez registrácie, iba podľa tvojho vkusu." />
+    <title>Vianočný tier list</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="snow" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Vianočný tier list, domov">
+        <span class="brand-mark">✦</span>
+        <span>Vianočný<br /><strong>tier list</strong></span>
+      </a>
+      <nav class="header-nav" aria-label="Hlavná navigácia">
+        <a href="#tierlist">Zoraď filmy</a>
+        <a href="#komunita">Komunita</a>
+      </nav>
+      <button class="ghost-button" id="resetTop" type="button">Resetovať výber</button>
+    </header>
+
+    <main id="top">
+      <section class="hero section-wrap">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-dot"></span> Sezónny prieskum vkusu</p>
+          <h1>Ktoré filmy robia<br /><em>Vianoce</em> Vianocami?</h1>
+          <p class="hero-lede">Poskladaj si vlastný rebríček vianočných filmov. Bez registrácie, bez správnej odpovede — iba tvoj osobný sviatočný mood.</p>
+          <div class="hero-meta">
+            <span><strong id="filmCount">12</strong> filmov v kolekcii</span>
+            <span class="meta-divider"></span>
+            <span><strong id="voteCount">—</strong> odovzdaných hlasov</span>
+          </div>
+        </div>
+        <div class="hero-art" aria-label="Vianočná ilustrácia">
+          <div class="hero-orbit orbit-one"></div>
+          <div class="hero-orbit orbit-two"></div>
+          <div class="hero-tree">✦</div>
+          <div class="hero-snowflake snowflake-one">✳</div>
+          <div class="hero-snowflake snowflake-two">✧</div>
+          <div class="hero-caption">Tvoja<br /><strong>vianočná<br />klasika</strong></div>
+        </div>
+      </section>
+
+      <section class="how-it-works section-wrap" aria-label="Ako na to">
+        <div class="step"><span>01</span><div><strong>Vyber film</strong><small>Chyť alebo ťukni</small></div></div>
+        <div class="step-line"></div>
+        <div class="step"><span>02</span><div><strong>Zoraď ho</strong><small>S = sviatočný top</small></div></div>
+        <div class="step-line"></div>
+        <div class="step"><span>03</span><div><strong>Odošli</strong><small>Stačí tvoje meno</small></div></div>
+      </section>
+
+      <section class="tier-section section-wrap" id="tierlist">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Tvoj rebríček</p>
+            <h2>Poskladaj si svoju<br /><em>vianočnú náladu.</em></h2>
+          </div>
+          <div class="heading-actions">
+            <span class="selection-hint" id="selectionHint">Vyber film a potom tier</span>
+            <button class="text-button" id="resetBoard" type="button">↺ Začať odznova</button>
+          </div>
+        </div>
+
+        <div class="board" id="board" aria-label="Tier list">
+          <div class="tier-row tier-s" data-tier="S">
+            <div class="tier-label"><b>S</b><span>must-watch</span></div>
+            <div class="tier-dropzone" data-tier="S" aria-label="Tier S"></div>
+          </div>
+          <div class="tier-row tier-a" data-tier="A">
+            <div class="tier-label"><b>A</b><span>veľmi dobré</span></div>
+            <div class="tier-dropzone" data-tier="A" aria-label="Tier A"></div>
+          </div>
+          <div class="tier-row tier-b" data-tier="B">
+            <div class="tier-label"><b>B</b><span>funguje vždy</span></div>
+            <div class="tier-dropzone" data-tier="B" aria-label="Tier B"></div>
+          </div>
+          <div class="tier-row tier-c" data-tier="C">
+            <div class="tier-label"><b>C</b><span>na pozadí</span></div>
+            <div class="tier-dropzone" data-tier="C" aria-label="Tier C"></div>
+          </div>
+          <div class="tier-row tier-d" data-tier="D">
+            <div class="tier-label"><b>D</b><span>radšej nie</span></div>
+            <div class="tier-dropzone" data-tier="D" aria-label="Tier D"></div>
+          </div>
+        </div>
+
+        <div class="library-head">
+          <div>
+            <p class="eyebrow">Kolekcia filmov</p>
+            <h3>Vyberaj z klasík aj novších kúskov</h3>
+          </div>
+          <label class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input id="searchInput" type="search" placeholder="Hľadať film…" autocomplete="off" />
+          </label>
+        </div>
+        <div class="film-library" id="filmLibrary" aria-label="Filmy na zaradenie"></div>
+        <p class="empty-library" id="emptyLibrary" hidden>Tomuto hľadaniu zatiaľ nič neodpovedá.</p>
+
+        <div class="submit-panel">
+          <div>
+            <span class="submit-kicker">Hotovo?</span>
+            <h3>Ukáž svoj rebríček ostatným.</h3>
+            <p>Pridaj iba svoje krstné meno alebo prezývku. Žiadne prihlasovanie.</p>
+          </div>
+          <button class="primary-button" id="submitButton" type="button">Zverejniť moje hodnotenie <span>↗</span></button>
+        </div>
+      </section>
+
+      <section class="community-section section-wrap" id="komunita">
+        <div class="section-heading community-heading">
+          <div>
+            <p class="eyebrow">Hlas ľudu</p>
+            <h2>Čo si myslí<br /><em>vianočná komunita.</em></h2>
+          </div>
+          <p class="community-note">Priemer vzniká z váh tierov<br />S = 5 · A = 4 · B = 3 · C = 2 · D = 1</p>
+        </div>
+        <div class="community-grid" id="communityGrid"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer section-wrap">
+      <span>Vyrobené pre dlhé zimné večery.</span>
+      <span>Bez účtu · bez stresu · s popcornom</span>
+    </footer>
+
+    <dialog class="name-dialog" id="nameDialog">
+      <form method="dialog" id="nameForm">
+        <button class="dialog-close" value="cancel" aria-label="Zavrieť">×</button>
+        <p class="eyebrow">Posledný krok</p>
+        <h2>Pod akým menom<br /><em>ťa nájdeme?</em></h2>
+        <p class="dialog-copy">Tvoje meno zobrazíme pri hlasovaní. Nič viac nepotrebujeme.</p>
+        <label class="name-label" for="nameInput">Meno alebo prezývka</label>
+        <input id="nameInput" name="name" maxlength="40" required placeholder="napr. Lucia" autocomplete="nickname" />
+        <button class="primary-button dialog-submit" value="submit" type="submit">Odoslať hodnotenie <span>↗</span></button>
+        <p class="dialog-status" id="dialogStatus" role="status"></p>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

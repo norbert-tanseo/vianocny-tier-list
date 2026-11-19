@@ -40,7 +40,7 @@ const FILMS = [
   { id: 'last-christmas', category: 'ostatne', title: 'Posledné Vianoce', year: 2019, image: 'https://br.web.img2.acsta.net/pictures/19/09/11/15/31/3986826.jpg' },
   { id: 'holdovers', category: 'ostatne', title: 'Zimné prázdniny', year: 2023, image: 'https://m.media-amazon.com/images/M/MV5BNDc2MzNkMjMtZDY5NC00NmQ0LWI1NjctZjRhNWIzZjc4MGRiXkEyXkFqcGdeQXVyMjkwOTAyMDU%40._V1_FMjpg_UX1000_.jpg' },
   { id: 'boy-called-christmas', category: 'ostatne', title: 'Chlapec menom Vianoce', year: 2021, image: 'https://cdn1.naekranie.pl/media/cache/amp/2021/11/Ch%C5%82opiec%20zwany%20Gwiazdk%C4%85_619e31dbd3faa.jpeg' },
-  { id: 'man-who-invented-christmas', category: 'ostatne', title: 'Muž, ktorý vynašiel Vianoce', year: 2017, image: 'https://m.media-amazon.com/images/M/MV5BMTYwMjk1MTUzM15BMl5BanBnXkFtZTgwNDM2ODgwNDI%40._V1_.jpg' },
+  { id: 'man-who-invented-christmas', category: 'ostatne', title: 'Muž, ktorý vynašiel Vianoce', year: 2017, image: 'https://d32qys9a6wm9no.cloudfront.net/images/movies/poster/b8/ecddd1751ae64f33bcb76bab1981389e_500x735.jpg?t=1636148895' },
 ];
 
 const WEIGHTS = { S: 5, A: 4, B: 3, C: 2, D: 1 };

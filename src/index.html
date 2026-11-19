@@ -24,9 +24,9 @@
       <section class="intro">
         <div>
           <p class="eyebrow">Vianočný tier list</p>
-          <h1>Zoraď svoje<br /><em>vianočné klasiky.</em></h1>
+          <h1>Zoraď svoje <em>vianočné klasiky.</em></h1>
         </div>
-        <p class="intro-note">Vyber kategóriu.<br />Zoraď filmy. Odošli hlas.</p>
+        <p class="intro-note">Vyber kategóriu a zoraď filmy.</p>
       </section>
 
       <section class="category-switcher" aria-label="Kategórie filmov">
@@ -72,6 +72,14 @@
           <span id="selectionHint">Zoraď všetky filmy v kategórii</span>
           <button class="primary-button" id="submitButton" type="button">Uložiť tierlist</button>
         </div>
+        <div class="save-result" id="saveResult" hidden role="status" aria-live="polite">
+          <span class="save-result-mark" aria-hidden="true">✓</span>
+          <div>
+            <strong>Tierlist je uložený</strong>
+            <span id="saveResultText"></span>
+          </div>
+          <button class="save-result-action" id="saveResultReset" type="button">Zoradiť znova</button>
+        </div>
       </section>
     </main>
 
@@ -86,7 +94,6 @@
       </form>
     </dialog>
 
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="./app.js" type="module"></script>
   </body>
 </html>

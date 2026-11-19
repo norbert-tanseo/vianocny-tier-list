@@ -65,8 +65,11 @@ const els = {
   form: document.querySelector('#nameForm'),
   name: document.querySelector('#nameInput'),
   dialogStatus: document.querySelector('#dialogStatus'),
-  toast: document.querySelector('#toast'),
   voteTotal: document.querySelector('#voteTotal'),
+  submit: document.querySelector('#submitButton'),
+  saveResult: document.querySelector('#saveResult'),
+  saveResultText: document.querySelector('#saveResultText'),
+  saveResultReset: document.querySelector('#saveResultReset'),
 };
 
 function filmsInCategory(categoryId) { return FILMS.filter((film) => film.category === categoryId); }
@@ -120,8 +123,10 @@ function renderBoard() {
 
   document.querySelectorAll('.film-card').forEach((card) => card.classList.toggle('is-selected', card.dataset.filmId === selectedFilmId));
   const remaining = categoryFilms.filter((film) => !rankings()[film.id]).length;
-  els.hint.textContent = selectedFilmId ? 'Vyber S, A, B, C alebo D' : remaining ? `${remaining} filmov čaká` : 'Všetko zoradené';
+  const ranked = categoryFilms.length - remaining;
+  els.hint.textContent = selectedFilmId ? 'Vyber tier S–D' : `${ranked} z ${categoryFilms.length} zoradených`;
   els.hint.classList.toggle('is-active', Boolean(selectedFilmId));
+  els.submit.disabled = remaining > 0;
 }
 
 function aggregateForFilm(filmId) {
@@ -156,15 +161,9 @@ function switchCategory(categoryId) {
   activeCategoryId = categoryId;
   selectedFilmId = null;
   els.search.value = '';
+  els.saveResult.hidden = true;
   renderTabs();
   renderBoard();
-}
-
-function showToast(message) {
-  els.toast.textContent = message;
-  els.toast.classList.add('is-visible');
-  window.clearTimeout(showToast.timer);
-  showToast.timer = window.setTimeout(() => els.toast.classList.remove('is-visible'), 3000);
 }
 
 async function loadResults() {
@@ -185,9 +184,8 @@ document.querySelectorAll('.tier-dropzone').forEach((zone) => {
   zone.addEventListener('click', () => { if (selectedFilmId) moveFilm(selectedFilmId, zone.dataset.tier); });
 });
 
-document.querySelector('#resetBoard').addEventListener('click', () => { rankingsByCategory[activeCategoryId] = {}; selectedFilmId = null; renderBoard(); });
+document.querySelector('#resetBoard').addEventListener('click', () => { rankingsByCategory[activeCategoryId] = {}; selectedFilmId = null; els.saveResult.hidden = true; renderBoard(); });
 document.querySelector('#submitButton').addEventListener('click', () => {
-  if (filmsInCategory(activeCategoryId).some((film) => !rankings()[film.id])) { showToast('Najprv zaraď všetky filmy v kategórii.'); return; }
   els.dialogStatus.textContent = '';
   els.name.value = '';
   els.dialog.showModal();
@@ -208,7 +206,9 @@ els.form.addEventListener('submit', async (event) => {
     results = data.results || results;
     els.dialog.close();
     renderPreview();
-    showToast(`Hlas uložený: ${categoryLabel(activeCategoryId)}`);
+    els.saveResultText.textContent = `${categoryLabel(activeCategoryId)} · ${name}`;
+    els.saveResult.hidden = false;
+    els.saveResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } catch {
     els.dialogStatus.textContent = 'Nepodarilo sa uložiť. Skús znova.';
   } finally {
@@ -218,6 +218,13 @@ els.form.addEventListener('submit', async (event) => {
 });
 
 document.querySelector('.dialog-close').addEventListener('click', () => els.dialog.close());
+els.saveResultReset.addEventListener('click', () => {
+  rankingsByCategory[activeCategoryId] = {};
+  selectedFilmId = null;
+  els.saveResult.hidden = true;
+  renderBoard();
+  document.querySelector('#zoraď').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 renderTabs();
 renderBoard();
 renderPreview();

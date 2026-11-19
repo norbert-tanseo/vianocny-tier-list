@@ -19,7 +19,6 @@ const FILMS = [
   { id: 'home-alone-2', category: 'americke', title: 'Sám doma 2: Stratený v New Yorku', year: 1992, image: 'https://upload.wikimedia.org/wikipedia/en/5/50/Home_Alone_2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled' },
   { id: 'elf', category: 'americke', title: 'Elf', year: 2003, image: 'https://upload.wikimedia.org/wikipedia/en/d/df/Elf_movie.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled' },
   { id: 'christmas-vacation', category: 'americke', title: 'Bláznivé Vianoce', year: 1989, image: 'https://filmartgallery.com/cdn/shop/files/National-Lampoons-Christmas-Vacation-Vintage-Movie-Poster-Original_19dd8462_2000x.jpg?v=1741230650' },
-  { id: 'die-hard', category: 'americke', title: 'Smrtonosná pasca', year: 1988, image: 'https://filmartgallery.com/cdn/shop/files/Die-Hard-Vintage-Movie-Poster-Original_b2d11d4a_5000x.jpg?v=1741144345' },
   { id: 'santa-clause', category: 'americke', title: 'Santa Claus', year: 1994, image: 'https://www.originalfilmart.co.uk/cdn/shop/products/SantaClause_1994_original_film_art_5000x.jpg?v=1640388246' },
   { id: 'miracle-34th-street', category: 'americke', title: 'Zázrak na 34. ulici', year: 1994, image: 'https://cdn11.bigcommerce.com/s-v1cc48yjt1/images/stencil/1280x1280/products/11268/12465/Miracle_on_34th_Street__91425.1765040386.jpg?c=2' },
   { id: 'four-christmases', category: 'americke', title: 'Štyri Vianoce', year: 2008, image: 'https://cdn11.bigcommerce.com/s-yzgoj/images/stencil/1280x1280/products/389254/3782440/apiluappv__41192.1625662576.jpg?c=2' },
@@ -47,6 +46,7 @@ const FILMS = [
 const WEIGHTS = { S: 5, A: 4, B: 3, C: 2, D: 1 };
 const filmById = Object.fromEntries(FILMS.map((film) => [film.id, film]));
 const rankingsByCategory = Object.fromEntries(CATEGORIES.map((category) => [category.id, {}]));
+const filmCardCache = new Map();
 
 let activeCategoryId = CATEGORIES[0].id;
 let selectedFilmId = null;
@@ -114,6 +114,11 @@ function createFilmCard(film) {
   return card;
 }
 
+function getFilmCard(film) {
+  if (!filmCardCache.has(film.id)) filmCardCache.set(film.id, createFilmCard(film));
+  return filmCardCache.get(film.id);
+}
+
 function moveFilm(filmId, tier) {
   if (!filmById[filmId] || filmById[filmId].category !== activeCategoryId) return;
   rankings()[filmId] = tier;
@@ -128,11 +133,11 @@ function renderBoard() {
   els.library.innerHTML = '';
   const unranked = categoryFilms.filter((film) => !rankings()[film.id] && film.title.toLowerCase().includes(query));
   els.emptyLibrary.hidden = unranked.length > 0;
-  unranked.forEach((film) => els.library.appendChild(createFilmCard(film)));
+  unranked.forEach((film) => els.library.appendChild(getFilmCard(film)));
 
   document.querySelectorAll('.tier-dropzone').forEach((zone) => {
     zone.innerHTML = '';
-    categoryFilms.filter((film) => rankings()[film.id] === zone.dataset.tier).forEach((film) => zone.appendChild(createFilmCard(film)));
+    categoryFilms.filter((film) => rankings()[film.id] === zone.dataset.tier).forEach((film) => zone.appendChild(getFilmCard(film)));
   });
 
   document.querySelectorAll('.film-card').forEach((card) => card.classList.toggle('is-selected', card.dataset.filmId === selectedFilmId));

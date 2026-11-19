@@ -1,9 +1,10 @@
 const VALID_TIERS = new Set(['S', 'A', 'B', 'C', 'D']);
 const VALID_FILMS = new Set([
-  'klaus', 'grinch', 'polar-express', 'christmas-carol', 'nightmare-before-christmas',
-  'home-alone', 'home-alone-2', 'elf', 'christmas-vacation', 'die-hard',
-  'three-wishes', 'with-you-world-fun', 'cosy-dens', 'perinbaba',
-  'love-actually', 'the-holiday', 'muppet-carol', 'family-stone',
+  'klaus', 'grinch', 'grinch-animated', 'polar-express', 'christmas-carol', 'nightmare-before-christmas',
+  'arthur-christmas', 'mickey-christmas-carol', 'snowman',
+  'home-alone', 'home-alone-2', 'elf', 'christmas-vacation', 'die-hard', 'santa-clause', 'miracle-34th-street', 'four-christmases', 'christmas-chronicles',
+  'three-wishes', 'with-you-world-fun', 'cosy-dens', 'perinbaba', 'salt-gold', 'golden-star', 'proud-princess', 'angel-lord', 'angel-lord-2',
+  'love-actually', 'the-holiday', 'muppet-carol', 'family-stone', 'gremlins', 'last-christmas', 'holdovers', 'boy-called-christmas', 'man-who-invented-christmas',
 ]);
 
 function json(data, status = 200) {

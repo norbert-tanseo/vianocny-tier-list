@@ -1,6 +1,6 @@
 # Vianočný tier list
 
-Jednostránková komunitná appka na zoradenie vianočných filmov. Frontend je buildless/static-friendly a pripravený pre Cloudflare Pages; odovzdané tier listy sa ukladajú do Cloudflare D1 cez Pages Function.
+Jednostránková komunitná appka na zoradenie vianočných filmov a rozprávok podľa kategórií. Frontend je static-friendly a pripravený pre Cloudflare Pages; odovzdané tier listy sa ukladajú do Cloudflare D1 cez Pages Function.
 
 ## Lokálne spustenie
 
@@ -22,4 +22,4 @@ Po vytvorení D1 databázy `vianocny-tier-list` spusti `schema.sql` a nastav bin
 
 ## Metodológia
 
-Každý návštevník zoradí všetkých 12 filmov do tierov S–D. Komunitné skóre je vážený priemer: S = 5, A = 4, B = 3, C = 2, D = 1. Hlasovanie je anonymné okrem zobrazovaného mena/prezývky a nevyžaduje účet.
+Každý návštevník zoradí filmy v jednej kategórii do tierov S–D a môže hlas uložiť pod menom alebo prezývkou. Komunitné skóre je vážený priemer: S = 5, A = 4, B = 3, C = 2, D = 1. Kategórie sú Animáky, Americké, Československé a Ostatné.

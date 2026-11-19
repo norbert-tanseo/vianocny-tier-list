@@ -1,54 +1,64 @@
-const FILMS = [
-  { id: 'home-alone', title: 'Home Alone', year: 1990, image: 'https://upload.wikimedia.org/wikipedia/en/7/78/Home_Alone_1990_film_poster.jpg' },
-  { id: 'home-alone-2', title: 'Home Alone 2', year: 1992, image: 'https://upload.wikimedia.org/wikipedia/en/5/5b/Home_Alone_2_1992_film_poster.jpg' },
-  { id: 'elf', title: 'Elf', year: 2003, image: 'https://upload.wikimedia.org/wikipedia/en/d/dc/Elf_2003_film_poster.jpg' },
-  { id: 'grinch', title: 'How the Grinch Stole Christmas', year: 2000, image: 'https://upload.wikimedia.org/wikipedia/en/1/19/How_the_Grinch_Stole_Christmas_film_poster.jpg' },
-  { id: 'polar-express', title: 'The Polar Express', year: 2004, image: 'https://upload.wikimedia.org/wikipedia/en/2/28/The_Polar_Express_%28film%29_poster.jpg' },
-  { id: 'love-actually', title: 'Love Actually', year: 2003, image: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Love_Actually_movie.jpg' },
-  { id: 'klaus', title: 'Klaus', year: 2019, image: 'https://upload.wikimedia.org/wikipedia/en/6/6c/Klaus_%282019_film%29.png' },
-  { id: 'the-holiday', title: 'The Holiday', year: 2006, image: 'https://upload.wikimedia.org/wikipedia/en/9/9c/The_Holiday_%282006_film%29.jpg' },
-  { id: 'christmas-carol', title: 'A Christmas Carol', year: 2009, image: 'https://upload.wikimedia.org/wikipedia/en/1/1c/Christmas_Carol_2009_poster.jpg' },
-  { id: 'muppet-carol', title: 'The Muppet Christmas Carol', year: 1992, image: 'https://upload.wikimedia.org/wikipedia/en/8/8f/The_Muppet_Christmas_Carol_poster.jpg' },
-  { id: 'christmas-vacation', title: "Christmas Vacation", year: 1989, image: 'https://upload.wikimedia.org/wikipedia/en/e/e0/National_Lampoon%27s_Christmas_Vacation_poster.jpg' },
-  { id: 'die-hard', title: 'Die Hard', year: 1988, image: 'https://upload.wikimedia.org/wikipedia/en/7/7e/Die_hard.jpg' },
+const CATEGORIES = [
+  { id: 'animaky', label: 'Animáky', note: 'Rozprávky' },
+  { id: 'americke', label: 'Americké', note: 'Hrané filmy' },
+  { id: 'ceskoslovenske', label: 'Československé', note: 'Klasiky' },
+  { id: 'ostatne', label: 'Ostatné', note: 'Vianočný mix' },
 ];
 
-const TIERS = ['S', 'A', 'B', 'C', 'D'];
-const WEIGHTS = { S: 5, A: 4, B: 3, C: 2, D: 1 };
-const SAMPLE_RESULTS = {
-  'home-alone': { S: 18, A: 6, B: 2, C: 1, D: 0 },
-  'elf': { S: 10, A: 13, B: 3, C: 1, D: 0 },
-  'love-actually': { S: 6, A: 11, B: 8, C: 2, D: 0 },
-  'grinch': { S: 5, A: 10, B: 8, C: 3, D: 1 },
-  'home-alone-2': { S: 5, A: 9, B: 9, C: 3, D: 1 },
-  'polar-express': { S: 4, A: 7, B: 8, C: 6, D: 2 },
-  'klaus': { S: 6, A: 5, B: 7, C: 4, D: 1 },
-  'the-holiday': { S: 3, A: 7, B: 8, C: 4, D: 1 },
-  'christmas-vacation': { S: 4, A: 4, B: 7, C: 7, D: 2 },
-  'muppet-carol': { S: 3, A: 5, B: 6, C: 4, D: 2 },
-  'christmas-carol': { S: 2, A: 5, B: 8, C: 6, D: 3 },
-  'die-hard': { S: 4, A: 5, B: 6, C: 7, D: 3 },
-};
+const FILMS = [
+  { id: 'klaus', category: 'animaky', title: 'Klaus', year: 2019, image: 'https://upload.wikimedia.org/wikipedia/en/6/6c/Klaus_%282019_film%29.png' },
+  { id: 'grinch', category: 'animaky', title: 'How the Grinch Stole Christmas', year: 2000, image: 'https://upload.wikimedia.org/wikipedia/en/1/19/How_the_Grinch_Stole_Christmas_film_poster.jpg' },
+  { id: 'polar-express', category: 'animaky', title: 'The Polar Express', year: 2004, image: 'https://upload.wikimedia.org/wikipedia/en/2/28/The_Polar_Express_%28film%29_poster.jpg' },
+  { id: 'christmas-carol', category: 'animaky', title: 'A Christmas Carol', year: 2009, image: 'https://upload.wikimedia.org/wikipedia/en/1/1c/Christmas_Carol_2009_poster.jpg' },
+  { id: 'nightmare-before-christmas', category: 'animaky', title: 'The Nightmare Before Christmas', year: 1993, image: 'https://upload.wikimedia.org/wikipedia/en/9/96/The_nightmare_before_christmas_poster.jpg' },
+  { id: 'home-alone', category: 'americke', title: 'Home Alone', year: 1990, image: 'https://upload.wikimedia.org/wikipedia/en/7/78/Home_Alone_1990_film_poster.jpg' },
+  { id: 'home-alone-2', category: 'americke', title: 'Home Alone 2', year: 1992, image: 'https://upload.wikimedia.org/wikipedia/en/5/5b/Home_Alone_2_1992_film_poster.jpg' },
+  { id: 'elf', category: 'americke', title: 'Elf', year: 2003, image: 'https://upload.wikimedia.org/wikipedia/en/d/dc/Elf_2003_film_poster.jpg' },
+  { id: 'christmas-vacation', category: 'americke', title: 'Christmas Vacation', year: 1989, image: 'https://upload.wikimedia.org/wikipedia/en/e/e0/National_Lampoon%27s_Christmas_Vacation_poster.jpg' },
+  { id: 'die-hard', category: 'americke', title: 'Die Hard', year: 1988, image: 'https://upload.wikimedia.org/wikipedia/en/7/7e/Die_hard.jpg' },
+  { id: 'three-wishes', category: 'ceskoslovenske', title: 'Three Wishes for Cinderella', year: 1973, image: 'https://www.rarefilmsandmore.com/Media/Thumbs/0016/0016569-three-wishes-for-cinderella-drei-haselnusse-fur-aschenbrodel-1973-with-switchable-english-subtitles-.jpg' },
+  { id: 'with-you-world-fun', category: 'ceskoslovenske', title: 'With You the World Is Fun', year: 1982, image: 'https://cdn.alza.cz/Foto/imggalery/Image/Article/stmbs%20text.jpg' },
+  { id: 'cosy-dens', category: 'ceskoslovenske', title: 'Cosy Dens', year: 1999, image: 'https://image.pmgstatic.com/cache/resized/w663/files/images/film/posters/165/049/165049346_5a5d1f.jpg' },
+  { id: 'perinbaba', category: 'ceskoslovenske', title: 'The Feather Fairy', year: 1985, image: 'https://www.moviemeter.nl/images/cover/34000/34438.jpg' },
+  { id: 'love-actually', category: 'ostatne', title: 'Love Actually', year: 2003, image: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Love_Actually_movie.jpg' },
+  { id: 'the-holiday', category: 'ostatne', title: 'The Holiday', year: 2006, image: 'https://upload.wikimedia.org/wikipedia/en/9/9c/The_Holiday_%282006_film%29.jpg' },
+  { id: 'muppet-carol', category: 'ostatne', title: 'The Muppet Christmas Carol', year: 1992, image: 'https://upload.wikimedia.org/wikipedia/en/8/8f/The_Muppet_Christmas_Carol_poster.jpg' },
+  { id: 'family-stone', category: 'ostatne', title: 'The Family Stone', year: 2005, image: 'https://upload.wikimedia.org/wikipedia/en/7/7e/The_Family_Stone.jpg' },
+];
 
+const WEIGHTS = { S: 5, A: 4, B: 3, C: 2, D: 1 };
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1512389142860-9c449e58a543?auto=format&fit=crop&w=500&q=80';
 const filmById = Object.fromEntries(FILMS.map((film) => [film.id, film]));
-const rankings = Object.fromEntries(FILMS.map((film) => [film.id, null]));
+const rankingsByCategory = Object.fromEntries(CATEGORIES.map((category) => [category.id, {}]));
+
+let activeCategoryId = CATEGORIES[0].id;
 let selectedFilmId = null;
-let results = structuredClone(SAMPLE_RESULTS);
+let results = {};
 
 const els = {
+  tabs: document.querySelector('#categoryTabs'),
+  preview: document.querySelector('#previewGrid'),
   library: document.querySelector('#filmLibrary'),
   emptyLibrary: document.querySelector('#emptyLibrary'),
   search: document.querySelector('#searchInput'),
   hint: document.querySelector('#selectionHint'),
-  board: document.querySelector('#board'),
+  title: document.querySelector('#activeCategoryTitle'),
   dialog: document.querySelector('#nameDialog'),
   form: document.querySelector('#nameForm'),
   name: document.querySelector('#nameInput'),
   dialogStatus: document.querySelector('#dialogStatus'),
   toast: document.querySelector('#toast'),
-  community: document.querySelector('#communityGrid'),
-  voteCount: document.querySelector('#voteCount'),
+  voteTotal: document.querySelector('#voteTotal'),
 };
+
+function filmsInCategory(categoryId) { return FILMS.filter((film) => film.category === categoryId); }
+function rankings() { return rankingsByCategory[activeCategoryId]; }
+function categoryLabel(categoryId) { return CATEGORIES.find((category) => category.id === categoryId)?.label || categoryId; }
+
+function renderTabs() {
+  els.tabs.innerHTML = CATEGORIES.map((category) => `<button class="category-tab ${category.id === activeCategoryId ? 'is-active' : ''}" type="button" data-category="${category.id}"><strong>${category.label}</strong><small>${category.note}</small></button>`).join('');
+  els.tabs.querySelectorAll('.category-tab').forEach((tab) => tab.addEventListener('click', () => switchCategory(tab.dataset.category)));
+}
 
 function createFilmCard(film) {
   const card = document.createElement('button');
@@ -57,80 +67,86 @@ function createFilmCard(film) {
   card.draggable = true;
   card.dataset.filmId = film.id;
   card.setAttribute('aria-label', `${film.title}, ${film.year}`);
-  card.innerHTML = `<img loading="lazy" src="${film.image}" alt="${film.title} — filmový plagát" /><span class="card-meta"><strong>${film.title}</strong><small>${film.year}</small></span>`;
-  card.addEventListener('dragstart', (event) => {
-    event.dataTransfer.setData('text/plain', film.id);
-    card.classList.add('is-selected');
-  });
+  card.innerHTML = `<img loading="lazy" src="${film.image}" alt="${film.title} — náhľad" /><span class="card-meta"><strong>${film.title}</strong><small>${film.year}</small></span>`;
+  card.querySelector('img').addEventListener('error', (event) => { event.currentTarget.onerror = null; event.currentTarget.src = FALLBACK_IMAGE; });
+  card.addEventListener('dragstart', (event) => { event.dataTransfer.setData('text/plain', film.id); card.classList.add('is-selected'); });
   card.addEventListener('dragend', () => card.classList.remove('is-selected'));
   card.addEventListener('click', () => {
-    if (rankings[film.id]) {
-      moveFilm(film.id, null);
-    } else if (selectedFilmId === film.id) {
-      selectedFilmId = null;
-    } else {
-      selectedFilmId = film.id;
-    }
-    render();
+    if (rankings()[film.id]) rankings()[film.id] = null;
+    else selectedFilmId = selectedFilmId === film.id ? null : film.id;
+    renderBoard();
   });
   return card;
 }
 
 function moveFilm(filmId, tier) {
-  rankings[filmId] = tier;
+  if (!filmById[filmId] || filmById[filmId].category !== activeCategoryId) return;
+  rankings()[filmId] = tier;
   selectedFilmId = null;
-  render();
+  renderBoard();
 }
 
-function render() {
+function renderBoard() {
+  const categoryFilms = filmsInCategory(activeCategoryId);
   const query = els.search.value.trim().toLowerCase();
+  els.title.textContent = categoryLabel(activeCategoryId);
   els.library.innerHTML = '';
-  const unranked = FILMS.filter((film) => !rankings[film.id] && film.title.toLowerCase().includes(query));
+  const unranked = categoryFilms.filter((film) => !rankings()[film.id] && film.title.toLowerCase().includes(query));
   els.emptyLibrary.hidden = unranked.length > 0;
   unranked.forEach((film) => els.library.appendChild(createFilmCard(film)));
 
   document.querySelectorAll('.tier-dropzone').forEach((zone) => {
     zone.innerHTML = '';
-    const tier = zone.dataset.tier;
-    FILMS.filter((film) => rankings[film.id] === tier).forEach((film) => zone.appendChild(createFilmCard(film)));
+    categoryFilms.filter((film) => rankings()[film.id] === zone.dataset.tier).forEach((film) => zone.appendChild(createFilmCard(film)));
   });
 
-  document.querySelectorAll('.film-card').forEach((card) => {
-    if (card.dataset.filmId === selectedFilmId) card.classList.add('is-selected');
-  });
-  const remaining = FILMS.filter((film) => !rankings[film.id]).length;
-  els.hint.textContent = selectedFilmId ? 'Teraz ťukni na S, A, B, C alebo D' : remaining ? `${remaining} filmov čaká na zaradenie` : 'Všetky filmy sú zoradené';
+  document.querySelectorAll('.film-card').forEach((card) => card.classList.toggle('is-selected', card.dataset.filmId === selectedFilmId));
+  const remaining = categoryFilms.filter((film) => !rankings()[film.id]).length;
+  els.hint.textContent = selectedFilmId ? 'Vyber S, A, B, C alebo D' : remaining ? `${remaining} filmov čaká` : 'Všetko zoradené';
   els.hint.classList.toggle('is-active', Boolean(selectedFilmId));
-  renderCommunity();
 }
 
-function renderCommunity() {
-  const ranked = FILMS.map((film) => {
-    const votes = results[film.id] || { S: 0, A: 0, B: 0, C: 0, D: 0 };
-    const total = Object.values(votes).reduce((sum, value) => sum + value, 0);
-    const points = Object.entries(votes).reduce((sum, [tier, count]) => sum + WEIGHTS[tier] * count, 0);
-    return { film, votes, total, score: total ? points / total : 0 };
-  }).sort((a, b) => b.score - a.score || b.total - a.total);
+function aggregateForFilm(filmId) {
+  const votes = results[filmId] || {};
+  const total = Object.values(votes).reduce((sum, value) => sum + Number(value || 0), 0);
+  const points = Object.entries(votes).reduce((sum, [tier, count]) => sum + (WEIGHTS[tier] || 0) * Number(count || 0), 0);
+  return { votes, total, score: total ? points / total : null };
+}
 
-  const totalVotes = ranked.reduce((sum, item) => sum + item.total, 0);
-  els.voteCount.textContent = totalVotes ? totalVotes.toLocaleString('sk-SK') : '—';
-  const max = Math.max(...ranked.map((item) => item.score), 1);
-  els.community.innerHTML = ranked.slice(0, 6).map((item, index) => {
-    const topTier = Object.entries(item.votes).sort((a, b) => b[1] - a[1])[0][0];
-    return `<article class="community-card ${index === 0 ? 'is-top' : ''}">
-      <div class="community-card-top"><span class="rank-number">0${index + 1}</span><div><h4>${item.film.title}</h4><span class="film-year">${item.film.year} · najčastejšie ${topTier}</span></div></div>
-      <div class="score"><strong>${item.score.toFixed(1)}</strong><span>/ 5,0 priemer</span></div>
-      <div class="score-bar"><i style="width:${Math.round((item.score / max) * 100)}%"></i></div>
-      <div class="vote-breakdown"><span><b>${item.total}</b> hlasov</span><span>S ${item.votes.S || 0} · A ${item.votes.A || 0}</span></div>
-    </article>`;
-  }).join('');
+function previewFilms(categoryId) {
+  return filmsInCategory(categoryId).map((film, index) => ({ film, ...aggregateForFilm(film.id), index })).sort((a, b) => {
+    if (a.score === null && b.score === null) return a.index - b.index;
+    if (a.score === null) return 1;
+    if (b.score === null) return -1;
+    return b.score - a.score || b.total - a.total || a.index - b.index;
+  }).slice(0, 3);
+}
+
+function renderPreview() {
+  const allVotes = Object.values(results).reduce((sum, votes) => sum + Object.values(votes).reduce((inner, value) => inner + Number(value || 0), 0), 0);
+  els.voteTotal.textContent = `${allVotes} hlasov`;
+  els.preview.innerHTML = CATEGORIES.map((category) => `<article class="preview-card">
+    <div class="preview-card-head"><div><span class="section-label">${category.note}</span><h3>${category.label}</h3></div><button class="jump-button" type="button" data-jump="${category.id}">Zoraď</button></div>
+    <div class="top-three">${previewFilms(category.id).map((item, index) => `<button class="top-three-row" type="button" data-jump="${category.id}"><span class="place">${index + 1}</span><img src="${item.film.image}" alt="${item.film.title} — náhľad" /><span class="top-three-title"><strong>${item.film.title}</strong><small>${item.film.year}</small></span><span class="top-three-score">${item.score === null ? '—' : item.score.toFixed(1)}</span></button>`).join('')}</div>
+  </article>`).join('');
+  els.preview.querySelectorAll('[data-jump]').forEach((button) => button.addEventListener('click', () => { switchCategory(button.dataset.jump); document.querySelector('#zoraď').scrollIntoView({ behavior: 'smooth' }); }));
+  els.preview.querySelectorAll('img').forEach((image) => image.addEventListener('error', (event) => { event.currentTarget.onerror = null; event.currentTarget.src = FALLBACK_IMAGE; }));
+}
+
+function switchCategory(categoryId) {
+  if (!rankingsByCategory[categoryId]) return;
+  activeCategoryId = categoryId;
+  selectedFilmId = null;
+  els.search.value = '';
+  renderTabs();
+  renderBoard();
 }
 
 function showToast(message) {
   els.toast.textContent = message;
   els.toast.classList.add('is-visible');
   window.clearTimeout(showToast.timer);
-  showToast.timer = window.setTimeout(() => els.toast.classList.remove('is-visible'), 3200);
+  showToast.timer = window.setTimeout(() => els.toast.classList.remove('is-visible'), 3000);
 }
 
 async function loadResults() {
@@ -138,39 +154,22 @@ async function loadResults() {
     const response = await fetch('/api/votes', { headers: { accept: 'application/json' } });
     if (!response.ok) return;
     const payload = await response.json();
-    if (payload.results && Object.keys(payload.results).length) results = payload.results;
-    renderCommunity();
-  } catch { /* Local preview uses the seeded fallback data. */ }
+    results = payload.results || {};
+    renderPreview();
+  } catch { /* Preview can still be used without the API. */ }
 }
 
-els.search.addEventListener('input', render);
+els.search.addEventListener('input', renderBoard);
 document.querySelectorAll('.tier-dropzone').forEach((zone) => {
   zone.addEventListener('dragover', (event) => { event.preventDefault(); zone.classList.add('is-over'); });
   zone.addEventListener('dragleave', () => zone.classList.remove('is-over'));
-  zone.addEventListener('drop', (event) => {
-    event.preventDefault();
-    zone.classList.remove('is-over');
-    const filmId = event.dataTransfer.getData('text/plain');
-    if (filmById[filmId]) moveFilm(filmId, zone.dataset.tier);
-  });
-  zone.addEventListener('click', () => {
-    if (selectedFilmId) moveFilm(selectedFilmId, zone.dataset.tier);
-  });
+  zone.addEventListener('drop', (event) => { event.preventDefault(); zone.classList.remove('is-over'); moveFilm(event.dataTransfer.getData('text/plain'), zone.dataset.tier); });
+  zone.addEventListener('click', () => { if (selectedFilmId) moveFilm(selectedFilmId, zone.dataset.tier); });
 });
 
-function resetBoard() {
-  FILMS.forEach((film) => { rankings[film.id] = null; });
-  selectedFilmId = null;
-  render();
-}
-
-document.querySelector('#resetBoard').addEventListener('click', resetBoard);
-document.querySelector('#resetTop').addEventListener('click', resetBoard);
+document.querySelector('#resetBoard').addEventListener('click', () => { rankingsByCategory[activeCategoryId] = {}; selectedFilmId = null; renderBoard(); });
 document.querySelector('#submitButton').addEventListener('click', () => {
-  if (FILMS.some((film) => !rankings[film.id])) {
-    showToast('Najprv zaraď všetkých 12 filmov do tierov.');
-    return;
-  }
+  if (filmsInCategory(activeCategoryId).some((film) => !rankings()[film.id])) { showToast('Najprv zaraď všetky filmy v kategórii.'); return; }
   els.dialogStatus.textContent = '';
   els.name.value = '';
   els.dialog.showModal();
@@ -184,25 +183,24 @@ els.form.addEventListener('submit', async (event) => {
   const submit = els.form.querySelector('.dialog-submit');
   submit.disabled = true;
   submit.textContent = 'Odosielam…';
-  const payload = { name, rankings: { ...rankings } };
   try {
-    const response = await fetch('/api/votes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+    const response = await fetch('/api/votes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name, categoryId: activeCategoryId, rankings: rankings() }) });
     if (!response.ok) throw new Error('offline');
     const data = await response.json();
-    if (data.results) results = data.results;
+    results = data.results || results;
     els.dialog.close();
-    renderCommunity();
-    showToast(`Ďakujeme, ${name}! Tvoj rebríček je v komunite.`);
-    document.querySelector('#komunita').scrollIntoView({ behavior: 'smooth' });
+    renderPreview();
+    showToast(`Hlas uložený: ${categoryLabel(activeCategoryId)}`);
   } catch {
-    els.dialogStatus.textContent = 'Hlas sa nepodarilo odoslať. Skús to ešte raz.';
+    els.dialogStatus.textContent = 'Nepodarilo sa uložiť. Skús znova.';
   } finally {
     submit.disabled = false;
-    submit.innerHTML = 'Odoslať hodnotenie <span>↗</span>';
+    submit.textContent = 'Odoslať';
   }
 });
 
 document.querySelector('.dialog-close').addEventListener('click', () => els.dialog.close());
-document.querySelector('#filmCount').textContent = FILMS.length;
-render();
+renderTabs();
+renderBoard();
+renderPreview();
 loadResults();

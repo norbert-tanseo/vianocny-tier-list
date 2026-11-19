@@ -1,7 +1,9 @@
 const VALID_TIERS = new Set(['S', 'A', 'B', 'C', 'D']);
 const VALID_FILMS = new Set([
-  'home-alone', 'home-alone-2', 'elf', 'grinch', 'polar-express', 'love-actually',
-  'klaus', 'the-holiday', 'christmas-carol', 'muppet-carol', 'christmas-vacation', 'die-hard',
+  'klaus', 'grinch', 'polar-express', 'christmas-carol', 'nightmare-before-christmas',
+  'home-alone', 'home-alone-2', 'elf', 'christmas-vacation', 'die-hard',
+  'three-wishes', 'with-you-world-fun', 'cosy-dens', 'perinbaba',
+  'love-actually', 'the-holiday', 'muppet-carol', 'family-stone',
 ]);
 
 function json(data, status = 200) {
@@ -32,7 +34,7 @@ export async function onRequestPost({ request, env }) {
   const rankings = body.rankings && typeof body.rankings === 'object' ? body.rankings : {};
   if (!name) return json({ error: 'Name is required.' }, 400);
   const entries = Object.entries(rankings);
-  if (entries.length !== VALID_FILMS.size || entries.some(([filmId, tier]) => !VALID_FILMS.has(filmId) || !VALID_TIERS.has(tier))) return json({ error: 'Complete rankings are required.' }, 400);
+  if (!entries.length || entries.some(([filmId, tier]) => !VALID_FILMS.has(filmId) || !VALID_TIERS.has(tier))) return json({ error: 'Complete rankings are required.' }, 400);
 
   const submissionId = crypto.randomUUID();
   const statements = entries.map(([filmId, tier]) => env.DB.prepare('INSERT INTO votes (submission_id, display_name, film_id, tier) VALUES (?, ?, ?, ?)').bind(submissionId, name, filmId, tier));

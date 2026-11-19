@@ -4,7 +4,7 @@ const FILM_CATEGORY = {
   klaus: 'animaky', grinch: 'animaky', 'grinch-animated': 'animaky', 'polar-express': 'animaky', 'christmas-carol': 'animaky',
   'nightmare-before-christmas': 'animaky', 'arthur-christmas': 'animaky', 'mickey-christmas-carol': 'animaky', snowman: 'animaky', 'robin-robin': 'animaky', 'the-star': 'animaky',
   'home-alone': 'americke', 'home-alone-2': 'americke', elf: 'americke', 'christmas-vacation': 'americke', 'santa-clause': 'americke',
-  'miracle-34th-street': 'americke', 'four-christmases': 'americke', 'christmas-chronicles': 'americke', 'jingle-all-the-way': 'americke', 'scrooged': 'americke', 'bad-santa': 'americke', 'christmas-story': 'americke', 'santa-clause-2': 'americke',
+  'miracle-34th-street': 'americke', 'four-christmases': 'americke', 'christmas-chronicles': 'americke', 'jingle-all-the-way': 'americke', 'scrooged': 'americke', 'bad-santa': 'americke', 'christmas-story': 'americke',
   'three-wishes': 'ceskoslovenske', 'with-you-world-fun': 'ceskoslovenske', 'cosy-dens': 'ceskoslovenske', perinbaba: 'ceskoslovenske',
   'salt-gold': 'ceskoslovenske', 'golden-star': 'ceskoslovenske', 'proud-princess': 'ceskoslovenske', 'angel-lord': 'ceskoslovenske', 'angel-lord-2': 'ceskoslovenske', 'three-veterans': 'ceskoslovenske', 'immortal-aunt': 'ceskoslovenske', 'devil-knows-why': 'ceskoslovenske', 'lotrando-zubejda': 'ceskoslovenske',
   'love-actually': 'ostatne', 'the-holiday': 'ostatne', 'muppet-carol': 'ostatne', 'family-stone': 'ostatne', gremlins: 'ostatne',

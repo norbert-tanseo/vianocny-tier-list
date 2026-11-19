@@ -1,5 +1,6 @@
 name = "vianocny-tier-list"
 compatibility_date = "2026-11-19"
+pages_build_output_dir = "dist"
 
 # Cloudflare Pages Git integration serves the static build from dist/.
 # Create a D1 database in the Cloudflare dashboard and add its database_id here,

@@ -146,7 +146,7 @@ function createFilmCard(film) {
   card.draggable = true;
   card.dataset.filmId = film.id;
   card.setAttribute('aria-label', `${film.title}, ${film.year}`);
-  card.innerHTML = `<img loading="lazy" src="${film.image}" alt="${film.title} — náhľad" /><span class="card-meta"><strong>${film.title}</strong><small>${film.year}</small></span>`;
+  card.innerHTML = `<img loading="eager" decoding="async" src="${film.image}" alt="${film.title} — náhľad" /><span class="card-meta"><strong>${film.title}</strong><small>${film.year}</small></span>`;
   card.querySelector('img').addEventListener('error', (event) => { event.currentTarget.onerror = null; event.currentTarget.src = posterPlaceholder(film); });
   card.addEventListener('dragstart', (event) => { event.dataTransfer.setData('text/plain', film.id); card.classList.add('is-selected'); });
   card.addEventListener('dragend', () => card.classList.remove('is-selected'));

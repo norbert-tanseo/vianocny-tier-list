@@ -1,11 +1,16 @@
 const VALID_TIERS = new Set(['S', 'A', 'B', 'C', 'D']);
-const VALID_FILMS = new Set([
-  'klaus', 'grinch', 'grinch-animated', 'polar-express', 'christmas-carol', 'nightmare-before-christmas',
-  'arthur-christmas', 'mickey-christmas-carol', 'snowman',
-  'home-alone', 'home-alone-2', 'elf', 'christmas-vacation', 'die-hard', 'santa-clause', 'miracle-34th-street', 'four-christmases', 'christmas-chronicles',
-  'three-wishes', 'with-you-world-fun', 'cosy-dens', 'perinbaba', 'salt-gold', 'golden-star', 'proud-princess', 'angel-lord', 'angel-lord-2',
-  'love-actually', 'the-holiday', 'muppet-carol', 'family-stone', 'gremlins', 'last-christmas', 'holdovers', 'boy-called-christmas', 'man-who-invented-christmas',
-]);
+const MAX_FILMS_PER_TIER = 3;
+const FILM_CATEGORY = {
+  klaus: 'animaky', grinch: 'animaky', 'grinch-animated': 'animaky', 'polar-express': 'animaky', 'christmas-carol': 'animaky',
+  'nightmare-before-christmas': 'animaky', 'arthur-christmas': 'animaky', 'mickey-christmas-carol': 'animaky', snowman: 'animaky',
+  'home-alone': 'americke', 'home-alone-2': 'americke', elf: 'americke', 'christmas-vacation': 'americke', 'santa-clause': 'americke',
+  'miracle-34th-street': 'americke', 'four-christmases': 'americke', 'christmas-chronicles': 'americke',
+  'three-wishes': 'ceskoslovenske', 'with-you-world-fun': 'ceskoslovenske', 'cosy-dens': 'ceskoslovenske', perinbaba: 'ceskoslovenske',
+  'salt-gold': 'ceskoslovenske', 'golden-star': 'ceskoslovenske', 'proud-princess': 'ceskoslovenske', 'angel-lord': 'ceskoslovenske', 'angel-lord-2': 'ceskoslovenske',
+  'love-actually': 'ostatne', 'the-holiday': 'ostatne', 'muppet-carol': 'ostatne', 'family-stone': 'ostatne', gremlins: 'ostatne',
+  'last-christmas': 'ostatne', holdovers: 'ostatne', 'boy-called-christmas': 'ostatne', 'man-who-invented-christmas': 'ostatne',
+};
+const VALID_FILMS = new Set(Object.keys(FILM_CATEGORY));
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
@@ -13,17 +18,24 @@ function json(data, status = 200) {
 
 async function readResults(db) {
   const rows = await db.prepare('SELECT film_id, tier, COUNT(*) AS votes FROM votes GROUP BY film_id, tier').all();
+  const submissionRows = await db.prepare('SELECT submission_id, film_id FROM votes').all();
   const results = {};
   for (const row of rows.results || []) {
     results[row.film_id] ||= { S: 0, A: 0, B: 0, C: 0, D: 0 };
     results[row.film_id][row.tier] = Number(row.votes);
   }
   const count = await db.prepare('SELECT COUNT(DISTINCT submission_id) AS submissions FROM votes').first();
-  return { results, submissions: Number(count?.submissions || 0) };
+  const categorySubmissions = Object.fromEntries(['animaky', 'americke', 'ceskoslovenske', 'ostatne'].map((categoryId) => [categoryId, new Set()]));
+  for (const row of submissionRows.results || []) {
+    const categoryId = FILM_CATEGORY[row.film_id];
+    if (categoryId) categorySubmissions[categoryId].add(row.submission_id);
+  }
+  const categoryCounts = Object.fromEntries(Object.entries(categorySubmissions).map(([categoryId, submissions]) => [categoryId, submissions.size]));
+  return { results, categoryCounts, submissions: Number(count?.submissions || 0) };
 }
 
 export async function onRequestGet({ env }) {
-  if (!env.DB) return json({ results: {}, submissions: 0, mode: 'preview' });
+  if (!env.DB) return json({ results: {}, categoryCounts: {}, submissions: 0, mode: 'preview' });
   return json(await readResults(env.DB));
 }
 
@@ -32,10 +44,16 @@ export async function onRequestPost({ request, env }) {
   let body;
   try { body = await request.json(); } catch { return json({ error: 'Invalid JSON.' }, 400); }
   const name = typeof body.name === 'string' ? body.name.trim().slice(0, 40) : '';
+  const categoryId = typeof body.categoryId === 'string' ? body.categoryId : '';
   const rankings = body.rankings && typeof body.rankings === 'object' ? body.rankings : {};
   if (!name) return json({ error: 'Name is required.' }, 400);
   const entries = Object.entries(rankings);
-  if (!entries.length || entries.some(([filmId, tier]) => !VALID_FILMS.has(filmId) || !VALID_TIERS.has(tier))) return json({ error: 'Complete rankings are required.' }, 400);
+  const expectedFilms = Object.entries(FILM_CATEGORY).filter(([, filmCategory]) => filmCategory === categoryId).map(([filmId]) => filmId);
+  const tierCounts = Object.values(rankings).reduce((counts, tier) => ({ ...counts, [tier]: (counts[tier] || 0) + 1 }), {});
+  const completeCategory = expectedFilms.length === entries.length && expectedFilms.every((filmId) => rankings[filmId]);
+  const validEntries = entries.every(([filmId, tier]) => VALID_FILMS.has(filmId) && FILM_CATEGORY[filmId] === categoryId && VALID_TIERS.has(tier));
+  const validLimits = Object.values(tierCounts).every((count) => count <= MAX_FILMS_PER_TIER);
+  if (!categoryId || !completeCategory || !validEntries || !validLimits) return json({ error: 'Complete rankings with max. 3 titles per tier are required.' }, 400);
 
   const submissionId = crypto.randomUUID();
   const statements = entries.map(([filmId, tier]) => env.DB.prepare('INSERT INTO votes (submission_id, display_name, film_id, tier) VALUES (?, ?, ?, ?)').bind(submissionId, name, filmId, tier));

@@ -44,6 +44,9 @@ const FILMS = [
 ];
 
 const WEIGHTS = { S: 5, A: 4, B: 3, C: 2, D: 1 };
+const MAX_FILMS_PER_TIER = 3;
+const NAME_STORAGE_KEY = 'vianocny-tier-list.name';
+const VOTED_STORAGE_KEY = 'vianocny-tier-list.voted-categories';
 const filmById = Object.fromEntries(FILMS.map((film) => [film.id, film]));
 const rankingsByCategory = Object.fromEntries(CATEGORIES.map((category) => [category.id, {}]));
 const filmCardCache = new Map();
@@ -51,8 +54,16 @@ const filmCardCache = new Map();
 let activeCategoryId = CATEGORIES[0].id;
 let selectedFilmId = null;
 let results = {};
+let categoryCounts = Object.fromEntries(CATEGORIES.map((category) => [category.id, 0]));
+let totalSubmissions = 0;
+let boardNotice = '';
+let viewMode = 'overview';
 
 const els = {
+  overviewView: document.querySelector('#overviewView'),
+  builderView: document.querySelector('#builderView'),
+  overviewNav: document.querySelector('#overviewNav'),
+  builderNav: document.querySelector('#builderNav'),
   tabs: document.querySelector('#categoryTabs'),
   preview: document.querySelector('#previewGrid'),
   library: document.querySelector('#filmLibrary'),
@@ -64,16 +75,31 @@ const els = {
   form: document.querySelector('#nameForm'),
   name: document.querySelector('#nameInput'),
   dialogStatus: document.querySelector('#dialogStatus'),
+  celebration: document.querySelector('#celebration'),
+  celebrationText: document.querySelector('#celebrationText'),
   voteTotal: document.querySelector('#voteTotal'),
   submit: document.querySelector('#submitButton'),
-  saveResult: document.querySelector('#saveResult'),
-  saveResultText: document.querySelector('#saveResultText'),
-  saveResultReset: document.querySelector('#saveResultReset'),
 };
 
 function filmsInCategory(categoryId) { return FILMS.filter((film) => film.category === categoryId); }
 function rankings() { return rankingsByCategory[activeCategoryId]; }
 function categoryLabel(categoryId) { return CATEGORIES.find((category) => category.id === categoryId)?.label || categoryId; }
+function categoryCountLabel(categoryId) {
+  const count = categoryCounts[categoryId] || 0;
+  return `${count} ${count === 1 ? 'človek' : 'ľudí'}`;
+}
+function votedCategories() {
+  try { return new Set(JSON.parse(localStorage.getItem(VOTED_STORAGE_KEY) || '[]')); } catch { return new Set(); }
+}
+function saveVotedCategory(categoryId) {
+  const voted = votedCategories();
+  voted.add(categoryId);
+  try { localStorage.setItem(VOTED_STORAGE_KEY, JSON.stringify([...voted])); } catch { /* Storage may be unavailable. */ }
+}
+function nextUnvotedCategoryId(currentCategoryId) {
+  const voted = votedCategories();
+  return CATEGORIES.find((category) => category.id !== currentCategoryId && !voted.has(category.id))?.id || null;
+}
 function escapeSvg(value) { return String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[character])); }
 function posterPlaceholder(film) {
   const palette = { animaky: ['#0f4a38', '#d8b15e'], americke: ['#8e2638', '#f0c874'], ceskoslovenske: ['#1e5361', '#e4b766'], ostatne: ['#5d2d3d', '#d5b26c'] }[film.category] || ['#123b2e', '#d0a451'];
@@ -91,7 +117,7 @@ function posterPlaceholder(film) {
 }
 
 function renderTabs() {
-  els.tabs.innerHTML = CATEGORIES.map((category) => `<button class="category-tab ${category.id === activeCategoryId ? 'is-active' : ''}" type="button" data-category="${category.id}"><strong>${category.label}</strong><small>${category.note}</small></button>`).join('');
+  els.tabs.innerHTML = CATEGORIES.map((category) => `<button class="category-tab ${category.id === activeCategoryId ? 'is-active' : ''}" type="button" data-category="${category.id}"><strong>${category.label}</strong><small>${category.note} · ${categoryCountLabel(category.id)}</small></button>`).join('');
   els.tabs.querySelectorAll('.category-tab').forEach((tab) => tab.addEventListener('click', () => switchCategory(tab.dataset.category)));
 }
 
@@ -107,6 +133,7 @@ function createFilmCard(film) {
   card.addEventListener('dragstart', (event) => { event.dataTransfer.setData('text/plain', film.id); card.classList.add('is-selected'); });
   card.addEventListener('dragend', () => card.classList.remove('is-selected'));
   card.addEventListener('click', () => {
+    boardNotice = '';
     if (rankings()[film.id]) rankings()[film.id] = null;
     else selectedFilmId = selectedFilmId === film.id ? null : film.id;
     renderBoard();
@@ -121,6 +148,14 @@ function getFilmCard(film) {
 
 function moveFilm(filmId, tier) {
   if (!filmById[filmId] || filmById[filmId].category !== activeCategoryId) return;
+  const alreadyInTier = rankings()[filmId] === tier;
+  const tierCount = Object.values(rankings()).filter((value) => value === tier).length;
+  if (!alreadyInTier && tierCount >= MAX_FILMS_PER_TIER) {
+    boardNotice = `Tier ${tier} je plný — maximum sú ${MAX_FILMS_PER_TIER} tituly.`;
+    renderBoard();
+    return;
+  }
+  boardNotice = '';
   rankings()[filmId] = tier;
   selectedFilmId = null;
   renderBoard();
@@ -143,8 +178,8 @@ function renderBoard() {
   document.querySelectorAll('.film-card').forEach((card) => card.classList.toggle('is-selected', card.dataset.filmId === selectedFilmId));
   const remaining = categoryFilms.filter((film) => !rankings()[film.id]).length;
   const ranked = categoryFilms.length - remaining;
-  els.hint.textContent = selectedFilmId ? 'Vyber tier S–D' : `${ranked} z ${categoryFilms.length} zoradených`;
-  els.hint.classList.toggle('is-active', Boolean(selectedFilmId));
+  els.hint.textContent = boardNotice || (selectedFilmId ? 'Vyber tier S–D' : `${ranked} z ${categoryFilms.length} zoradených`);
+  els.hint.classList.toggle('is-active', Boolean(selectedFilmId || boardNotice));
   els.submit.disabled = remaining > 0;
 }
 
@@ -165,22 +200,42 @@ function previewFilms(categoryId) {
 }
 
 function renderPreview() {
-  const allVotes = Object.values(results).reduce((sum, votes) => sum + Object.values(votes).reduce((inner, value) => inner + Number(value || 0), 0), 0);
-  els.voteTotal.textContent = `${allVotes} hlasov`;
+  els.voteTotal.textContent = `${totalSubmissions} ${totalSubmissions === 1 ? 'hodnotenie' : 'hodnotení'} celkom`;
   els.preview.innerHTML = CATEGORIES.map((category) => `<article class="preview-card">
-    <div class="preview-card-head"><div><span class="section-label">${category.note}</span><h3>${category.label}</h3></div><button class="jump-button" type="button" data-jump="${category.id}">Zoraď</button></div>
+    <div class="preview-card-head"><div><span class="section-label">${category.note}</span><h3>${category.label}</h3><small class="category-votes">${categoryCountLabel(category.id)} hodnotilo</small></div><button class="jump-button" type="button" data-jump="${category.id}">Zoraď</button></div>
     <div class="top-three">${previewFilms(category.id).map((item, index) => `<button class="top-three-row" type="button" data-jump="${category.id}"><span class="place">${index + 1}</span><img data-film-id="${item.film.id}" src="${item.film.image}" alt="${item.film.title} — náhľad" /><span class="top-three-title"><strong>${item.film.title}</strong><small>${item.film.year}</small></span><span class="top-three-score">${item.score === null ? '—' : item.score.toFixed(1)}</span></button>`).join('')}</div>
   </article>`).join('');
-  els.preview.querySelectorAll('[data-jump]').forEach((button) => button.addEventListener('click', () => { switchCategory(button.dataset.jump); document.querySelector('#zoraď').scrollIntoView({ behavior: 'smooth' }); }));
+  els.preview.querySelectorAll('[data-jump]').forEach((button) => button.addEventListener('click', () => goToBuilder(button.dataset.jump)));
   els.preview.querySelectorAll('img').forEach((image) => image.addEventListener('error', (event) => { event.currentTarget.onerror = null; event.currentTarget.src = posterPlaceholder(filmById[image.dataset.filmId]); }));
+}
+
+function setViewMode(nextView) {
+  viewMode = nextView;
+  els.overviewView.hidden = nextView !== 'overview';
+  els.builderView.hidden = nextView !== 'builder';
+  els.overviewNav.classList.toggle('is-active', nextView === 'overview');
+  els.builderNav.classList.toggle('is-active', nextView === 'builder');
+  els.overviewNav.setAttribute('aria-current', nextView === 'overview' ? 'page' : 'false');
+  els.builderNav.setAttribute('aria-current', nextView === 'builder' ? 'page' : 'false');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToBuilder(categoryId = activeCategoryId) {
+  if (categoryId && rankingsByCategory[categoryId]) activeCategoryId = categoryId;
+  selectedFilmId = null;
+  boardNotice = '';
+  els.search.value = '';
+  renderTabs();
+  renderBoard();
+  setViewMode('builder');
 }
 
 function switchCategory(categoryId) {
   if (!rankingsByCategory[categoryId]) return;
   activeCategoryId = categoryId;
   selectedFilmId = null;
+  boardNotice = '';
   els.search.value = '';
-  els.saveResult.hidden = true;
   renderTabs();
   renderBoard();
 }
@@ -191,6 +246,9 @@ async function loadResults() {
     if (!response.ok) return;
     const payload = await response.json();
     results = payload.results || {};
+    categoryCounts = { ...categoryCounts, ...(payload.categoryCounts || {}) };
+    totalSubmissions = Number(payload.submissions || 0);
+    renderTabs();
     renderPreview();
   } catch { /* Preview can still be used without the API. */ }
 }
@@ -203,10 +261,12 @@ document.querySelectorAll('.tier-dropzone').forEach((zone) => {
   zone.addEventListener('click', () => { if (selectedFilmId) moveFilm(selectedFilmId, zone.dataset.tier); });
 });
 
-document.querySelector('#resetBoard').addEventListener('click', () => { rankingsByCategory[activeCategoryId] = {}; selectedFilmId = null; els.saveResult.hidden = true; renderBoard(); });
+els.overviewNav.addEventListener('click', () => setViewMode('overview'));
+els.builderNav.addEventListener('click', () => goToBuilder());
+document.querySelector('#resetBoard').addEventListener('click', () => { rankingsByCategory[activeCategoryId] = {}; selectedFilmId = null; boardNotice = ''; renderBoard(); });
 document.querySelector('#submitButton').addEventListener('click', () => {
   els.dialogStatus.textContent = '';
-  els.name.value = '';
+  try { els.name.value = localStorage.getItem(NAME_STORAGE_KEY) || ''; } catch { els.name.value = ''; }
   els.dialog.showModal();
   window.setTimeout(() => els.name.focus(), 50);
 });
@@ -223,11 +283,29 @@ els.form.addEventListener('submit', async (event) => {
     if (!response.ok) throw new Error('offline');
     const data = await response.json();
     results = data.results || results;
+    categoryCounts = { ...categoryCounts, ...(data.categoryCounts || {}) };
+    totalSubmissions = Number(data.submissions || totalSubmissions);
+    try { localStorage.setItem(NAME_STORAGE_KEY, name); } catch { /* Storage may be unavailable. */ }
+    saveVotedCategory(activeCategoryId);
     els.dialog.close();
+    const submittedCategoryId = activeCategoryId;
+    const nextCategoryId = nextUnvotedCategoryId(submittedCategoryId);
+    renderTabs();
     renderPreview();
-    els.saveResultText.textContent = `${categoryLabel(activeCategoryId)} · ${name}`;
-    els.saveResult.hidden = false;
-    els.saveResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    els.celebrationText.textContent = nextCategoryId ? `Ďalej: ${categoryLabel(nextCategoryId)}` : 'Všetky kategórie sú hotové';
+    els.celebration.hidden = false;
+    requestAnimationFrame(() => els.celebration.classList.add('is-visible'));
+    window.setTimeout(() => {
+      els.celebration.classList.remove('is-visible');
+      window.setTimeout(() => {
+        els.celebration.hidden = true;
+        if (nextCategoryId) {
+          goToBuilder(nextCategoryId);
+        } else {
+          setViewMode('overview');
+        }
+      }, 220);
+    }, 950);
   } catch {
     els.dialogStatus.textContent = 'Nepodarilo sa uložiť. Skús znova.';
   } finally {
@@ -237,14 +315,8 @@ els.form.addEventListener('submit', async (event) => {
 });
 
 document.querySelector('.dialog-close').addEventListener('click', () => els.dialog.close());
-els.saveResultReset.addEventListener('click', () => {
-  rankingsByCategory[activeCategoryId] = {};
-  selectedFilmId = null;
-  els.saveResult.hidden = true;
-  renderBoard();
-  document.querySelector('#zoraď').scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
 renderTabs();
 renderBoard();
 renderPreview();
+setViewMode('overview');
 loadResults();

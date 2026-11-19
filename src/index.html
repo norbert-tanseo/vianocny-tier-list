@@ -17,7 +17,10 @@
         <span class="brand-mark">✦</span>
         <span>Vianočný <strong>tier list</strong></span>
       </a>
-      <a class="community-link" href="#prehlad">Top 3</a>
+      <nav class="view-nav" aria-label="Zobrazenie">
+        <button class="view-nav-button is-active" id="overviewNav" type="button">Prehľad</button>
+        <button class="view-nav-button" id="builderNav" type="button">Tvoj tierlist</button>
+      </nav>
     </header>
 
     <main id="top" class="page">
@@ -29,59 +32,64 @@
         <p class="intro-note">Vyber kategóriu a zoraď filmy.</p>
       </section>
 
-      <section class="category-switcher" aria-label="Kategórie filmov">
-        <div class="category-tabs" id="categoryTabs"></div>
+      <section class="view-section" id="overviewView">
+        <section class="preview-section" id="prehlad">
+          <div class="section-topline">
+            <div>
+              <span class="section-label">Komunitný prehľad</span>
+              <h2>Top 3 v každej kategórii</h2>
+            </div>
+            <span class="vote-total" id="voteTotal">0 hodnotení</span>
+          </div>
+          <div class="preview-grid" id="previewGrid"></div>
+        </section>
       </section>
 
-      <section class="preview-section" id="prehlad">
-        <div class="section-topline">
-          <div>
-            <span class="section-label">Prehľad</span>
-            <h2>Top 3 v každej kategórii</h2>
+      <section class="view-section" id="builderView" hidden>
+        <section class="category-switcher" aria-label="Kategórie filmov">
+          <div class="category-tabs" id="categoryTabs"></div>
+        </section>
+
+        <section class="builder-section" id="zoraď">
+          <div class="section-topline builder-topline">
+            <div>
+              <span class="section-label">Tvoj výber</span>
+              <h2 id="activeCategoryTitle">Animáky</h2>
+            </div>
+            <button class="reset-button" id="resetBoard" type="button">Resetovať</button>
           </div>
-          <span class="vote-total" id="voteTotal">0 hlasov</span>
-        </div>
-        <div class="preview-grid" id="previewGrid"></div>
-      </section>
+          <div class="rules-note"><span>Pravidlo</span><strong>Max. 3 tituly v jednom tiere</strong></div>
 
-      <section class="builder-section" id="zoraď">
-        <div class="section-topline builder-topline">
-          <div>
-            <span class="section-label">Tvoj výber</span>
-            <h2 id="activeCategoryTitle">Animáky</h2>
+          <div class="board" id="board" aria-label="Aktívny tier list">
+            <div class="tier-row tier-s" data-tier="S"><div class="tier-label"><b>S</b></div><div class="tier-dropzone" data-tier="S" aria-label="Tier S"></div></div>
+            <div class="tier-row tier-a" data-tier="A"><div class="tier-label"><b>A</b></div><div class="tier-dropzone" data-tier="A" aria-label="Tier A"></div></div>
+            <div class="tier-row tier-b" data-tier="B"><div class="tier-label"><b>B</b></div><div class="tier-dropzone" data-tier="B" aria-label="Tier B"></div></div>
+            <div class="tier-row tier-c" data-tier="C"><div class="tier-label"><b>C</b></div><div class="tier-dropzone" data-tier="C" aria-label="Tier C"></div></div>
+            <div class="tier-row tier-d" data-tier="D"><div class="tier-label"><b>D</b></div><div class="tier-dropzone" data-tier="D" aria-label="Tier D"></div></div>
           </div>
-          <button class="reset-button" id="resetBoard" type="button">Resetovať</button>
-        </div>
 
-        <div class="board" id="board" aria-label="Aktívny tier list">
-          <div class="tier-row tier-s" data-tier="S"><div class="tier-label"><b>S</b></div><div class="tier-dropzone" data-tier="S" aria-label="Tier S"></div></div>
-          <div class="tier-row tier-a" data-tier="A"><div class="tier-label"><b>A</b></div><div class="tier-dropzone" data-tier="A" aria-label="Tier A"></div></div>
-          <div class="tier-row tier-b" data-tier="B"><div class="tier-label"><b>B</b></div><div class="tier-dropzone" data-tier="B" aria-label="Tier B"></div></div>
-          <div class="tier-row tier-c" data-tier="C"><div class="tier-label"><b>C</b></div><div class="tier-dropzone" data-tier="C" aria-label="Tier C"></div></div>
-          <div class="tier-row tier-d" data-tier="D"><div class="tier-label"><b>D</b></div><div class="tier-dropzone" data-tier="D" aria-label="Tier D"></div></div>
-        </div>
-
-        <div class="library-bar">
-          <h3>Filmy</h3>
-          <label class="search-box"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Hľadať" autocomplete="off" /></label>
-        </div>
-        <div class="film-library" id="filmLibrary" aria-label="Filmy na zaradenie"></div>
-        <p class="empty-library" id="emptyLibrary" hidden>Nič sa nenašlo.</p>
-
-        <div class="submit-row">
-          <span id="selectionHint">Zoraď všetky filmy v kategórii</span>
-          <button class="primary-button" id="submitButton" type="button">Uložiť tierlist</button>
-        </div>
-        <div class="save-result" id="saveResult" hidden role="status" aria-live="polite">
-          <span class="save-result-mark" aria-hidden="true">✓</span>
-          <div>
-            <strong>Tierlist je uložený</strong>
-            <span id="saveResultText"></span>
+          <div class="library-bar">
+            <h3>Filmy</h3>
+            <label class="search-box"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Hľadať" autocomplete="off" /></label>
           </div>
-          <button class="save-result-action" id="saveResultReset" type="button">Zoradiť znova</button>
-        </div>
+          <div class="film-library" id="filmLibrary" aria-label="Filmy na zaradenie"></div>
+          <p class="empty-library" id="emptyLibrary" hidden>Nič sa nenašlo.</p>
+
+          <div class="submit-row">
+            <span id="selectionHint">Zoraď všetky filmy v kategórii</span>
+            <button class="primary-button" id="submitButton" type="button">Uložiť tierlist</button>
+          </div>
+        </section>
       </section>
     </main>
+
+    <div class="celebration" id="celebration" hidden aria-live="polite">
+      <div class="celebration-card">
+        <span class="celebration-star">✦</span>
+        <strong>Uložené</strong>
+        <span id="celebrationText">Ďalej na inú kategóriu</span>
+      </div>
+    </div>
 
     <dialog class="name-dialog" id="nameDialog">
       <form method="dialog" id="nameForm">
@@ -94,6 +102,6 @@
       </form>
     </dialog>
 
-    <script src="./app.js?v=final-poster-5" type="module"></script>
+    <script src="./app.js?v=flow-rules-6" type="module"></script>
   </body>
 </html>

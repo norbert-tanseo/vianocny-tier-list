@@ -48,6 +48,7 @@ const FILMS = [
   { id: 'cisars-baker-bakers-emperor', category: 'ceskoslovenske', title: 'Cisárov pekár – Pekárov cisár', year: 1951, image: 'https://prod-fdb-storage.fra1.cdn.digitaloceanspaces.com/thumbnails/w3840/galleries/4fvvhikin1uxpqqvklry.jpeg' },
   { id: 'madly-sad-princess', category: 'ceskoslovenske', title: 'Šíleně smutná princezna', year: 1968, image: 'https://prod-fdb-storage.fra1.cdn.digitaloceanspaces.com/thumbnails/w3840/galleries/n6zg2g7te7lbcw0holwn.jpeg' },
   { id: 'devils-not-jokes', category: 'ceskoslovenske', title: 'S čerty nejsou žerty', year: 1984, image: 'https://nfa.fra1.cdn.digitaloceanspaces.com/assets/filmy/scnz-poster.jpg' },
+  { id: 'rysava-jalovica', category: 'ceskoslovenske', title: 'Rysavá jalovica', year: 1970, image: 'https://www.niagara.sk/images/products/big/rysava-jalovica.jpg' },
   { id: 'love-actually', category: 'ostatne', title: 'Láska nebeská', year: 2003, image: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Love_Actually_movie.jpg' },
   { id: 'the-holiday', category: 'ostatne', title: 'Prázdniny', year: 2006, image: 'https://media.jutarnji.hr/images/slike/2022/12/07/27231099.jpg' },
   { id: 'muppet-carol', category: 'ostatne', title: 'Vianočná koleda Muppetov', year: 1992, image: 'https://upload.wikimedia.org/wikipedia/en/9/95/Muppet_christmas_carol.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled' },

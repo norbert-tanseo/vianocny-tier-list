@@ -1,12 +1,12 @@
 const VALID_TIERS = new Set(['S', 'A', 'B', 'C', 'D']);
 const MAX_FILMS_PER_TIER = 3;
 const FILM_CATEGORY = {
-  klaus: 'animaky', grinch: 'animaky', 'grinch-animated': 'animaky', 'polar-express': 'animaky', 'christmas-carol': 'animaky',
+  klaus: 'animaky', grinch: 'animaky', 'grinch-animated': 'animaky', 'polar-express': 'animaky', 'christmas-carol': 'animaky', 'legendary-guardians': 'animaky',
   'nightmare-before-christmas': 'animaky', 'arthur-christmas': 'animaky', 'mickey-christmas-carol': 'animaky', snowman: 'animaky', 'robin-robin': 'animaky', 'the-star': 'animaky',
   'home-alone': 'americke', 'home-alone-2': 'americke', elf: 'americke', 'christmas-vacation': 'americke', 'santa-clause': 'americke',
-  'miracle-34th-street': 'americke', 'four-christmases': 'americke', 'christmas-chronicles': 'americke', 'jingle-all-the-way': 'americke', 'scrooged': 'americke', 'bad-santa': 'americke', 'christmas-story': 'americke', 'dennis-christmas': 'americke',
+  'miracle-34th-street': 'americke', 'four-christmases': 'americke', 'christmas-chronicles': 'americke', 'jingle-all-the-way': 'americke', 'scrooged': 'americke', 'bad-santa': 'americke', 'christmas-story': 'americke', 'dennis-christmas': 'americke', 'jack-frost': 'americke',
   'three-wishes': 'ceskoslovenske', 'with-you-world-fun': 'ceskoslovenske', 'cosy-dens': 'ceskoslovenske', perinbaba: 'ceskoslovenske',
-  'salt-gold': 'ceskoslovenske', 'golden-star': 'ceskoslovenske', 'proud-princess': 'ceskoslovenske', 'angel-lord': 'ceskoslovenske', 'angel-lord-2': 'ceskoslovenske', 'three-veterans': 'ceskoslovenske', 'immortal-aunt': 'ceskoslovenske', 'devil-knows-why': 'ceskoslovenske', 'lotrando-zubejda': 'ceskoslovenske',
+  'salt-gold': 'ceskoslovenske', 'golden-star': 'ceskoslovenske', 'proud-princess': 'ceskoslovenske', 'angel-lord': 'ceskoslovenske', 'angel-lord-2': 'ceskoslovenske', 'three-veterans': 'ceskoslovenske', 'immortal-aunt': 'ceskoslovenske', 'devil-knows-why': 'ceskoslovenske', 'lotrando-zubejda': 'ceskoslovenske', 'cisars-baker-bakers-emperor': 'ceskoslovenske', 'madly-sad-princess': 'ceskoslovenske', 'devils-not-jokes': 'ceskoslovenske',
   'love-actually': 'ostatne', 'the-holiday': 'ostatne', 'muppet-carol': 'ostatne', 'family-stone': 'ostatne', gremlins: 'ostatne',
   'last-christmas': 'ostatne', holdovers: 'ostatne', 'boy-called-christmas': 'ostatne', 'man-who-invented-christmas': 'ostatne', 'family-man': 'ostatne', 'last-holiday': 'ostatne', 'christmas-kranks': 'ostatne',
 };

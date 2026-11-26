@@ -221,6 +221,62 @@ function openFilmDetail(film) {
   els.filmDialog.showModal();
 }
 
+function initSnowfall() {
+  const canvas = document.querySelector('#snowCanvas');
+  if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const context = canvas.getContext('2d');
+  if (!context) return;
+  let width = 0;
+  let height = 0;
+  let ratio = 1;
+  let flakes = [];
+  const randomFlake = (startAtTop = false) => ({
+    x: Math.random() * width,
+    y: startAtTop ? -Math.random() * height : Math.random() * height,
+    radius: .35 + Math.random() * 1.7,
+    speed: .18 + Math.random() * .9,
+    sway: .25 + Math.random() * 1.15,
+    drift: .2 + Math.random() * 1.25,
+    phase: Math.random() * Math.PI * 2,
+    opacity: .14 + Math.random() * .5,
+    soft: Math.random() < .18,
+  });
+  const resize = () => {
+    ratio = Math.min(window.devicePixelRatio || 1, 2);
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    const count = Math.min(110, Math.max(42, Math.round(width / 13)));
+    flakes = Array.from({ length: count }, () => randomFlake());
+  };
+  let previousTime = 0;
+  const draw = (time) => {
+    const elapsed = Math.min(34, time - previousTime || 16);
+    previousTime = time;
+    context.clearRect(0, 0, width, height);
+    const wind = Math.sin(time * .00013) * .26 + Math.sin(time * .000037) * .18;
+    flakes.forEach((flake) => {
+      flake.y += flake.speed * elapsed * .055;
+      flake.x += (wind + Math.sin(time * .00035 * flake.sway + flake.phase) * flake.drift) * elapsed * .035;
+      if (flake.y > height + 8 || flake.x < -12 || flake.x > width + 12) Object.assign(flake, randomFlake(true));
+      context.beginPath();
+      context.globalAlpha = flake.opacity;
+      context.fillStyle = '#f7f1e7';
+      if (flake.soft) context.shadowBlur = 5;
+      context.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+      context.fill();
+      context.shadowBlur = 0;
+    });
+    context.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  };
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+  requestAnimationFrame(draw);
+}
+
 function renderTabs() {
   els.tabs.innerHTML = CATEGORIES.map((category) => `<button class="category-tab ${category.id === activeCategoryId ? 'is-active' : ''} ${hasVotedCategory(category.id) ? 'is-voted' : ''}" type="button" data-category="${category.id}" aria-label="${category.label}${hasVotedCategory(category.id) ? ', už odhlasované' : ''}"><strong>${category.label}<span class="category-check" aria-hidden="true">${hasVotedCategory(category.id) ? '✓' : ''}</span></strong><small>${category.note} · ${categoryCountLabel(category.id)}</small></button>`).join('');
   els.tabs.querySelectorAll('.category-tab').forEach((tab) => tab.addEventListener('click', () => switchCategory(tab.dataset.category)));
@@ -442,4 +498,5 @@ renderTabs();
 renderBoard();
 renderPreview();
 setViewMode('overview');
+initSnowfall();
 loadResults();

@@ -355,9 +355,9 @@ function attachTouchDrag(card, film) {
     if (!isTouchLayout() || event.pointerType === 'mouse' || event.target.closest('.film-info-button')) return;
     event.preventDefault();
     card.setPointerCapture(event.pointerId);
-    card.classList.add('is-touch-preview');
     let ghost = null;
     let dragging = false;
+    let previewTimer = window.setTimeout(() => card.classList.add('is-touch-preview'), 260);
 
     const moveGhost = (clientX, clientY) => {
       if (!ghost) return;
@@ -373,12 +373,14 @@ function attachTouchDrag(card, film) {
       const target = drop ? updateDropTarget(clientX, clientY) : null;
       document.querySelectorAll('.tier-dropzone').forEach((zone) => zone.classList.remove('is-over'));
       ghost?.remove();
+      window.clearTimeout(previewTimer);
       card.classList.remove('is-touch-preview', 'is-touch-dragging');
       if (target) moveFilm(film.id, target.dataset.tier);
     };
     const startDrag = (moveEvent) => {
       if (dragging) return;
       dragging = true;
+      window.clearTimeout(previewTimer);
       card.classList.remove('is-touch-preview');
       card.classList.add('is-touch-dragging');
       ghost = card.cloneNode(true);
@@ -397,11 +399,13 @@ function attachTouchDrag(card, film) {
     const onUp = (upEvent) => {
       card.removeEventListener('pointermove', onMove);
       card.removeEventListener('pointercancel', onCancel);
+      window.clearTimeout(previewTimer);
       finish(dragging, upEvent.clientX, upEvent.clientY);
     };
     const onCancel = () => {
       card.removeEventListener('pointermove', onMove);
       card.removeEventListener('pointerup', onUp);
+      window.clearTimeout(previewTimer);
       finish();
     };
     card.addEventListener('pointermove', onMove);

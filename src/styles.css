@@ -9,7 +9,6 @@
   --gold: #d7b467;
   --shadow: 0 14px 34px rgba(0, 0, 0, .22);
 }
-
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { scroll-behavior: smooth; }
@@ -257,30 +256,4 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
   .film-detail-copy p { font-size: 13px; line-height: 1.5; }
   .submit-row { align-items: stretch; flex-direction: column; }
   .submit-row .primary-button { width: 100%; }
-}
-
-@media (max-width: 600px) and (hover: hover) {
-  .library-panel .film-card:hover,
-  .library-panel .film-card:focus-within {
-    position: fixed;
-    z-index: 80;
-    inset: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: auto !important;
-    border-color: #397457;
-    background: #18382d;
-    box-shadow: 0 24px 80px rgba(0,0,0,.62);
-  }
-  .library-panel .film-card:hover .film-card-main,
-  .library-panel .film-card:focus-within .film-card-main { width: min(360px, 82vw); }
-  .library-panel .film-card:hover img,
-  .library-panel .film-card:focus-within img { height: min(56vh, 430px); }
-  .library-panel .film-card:hover .card-meta,
-  .library-panel .film-card:focus-within .card-meta { padding: 10px; }
-  .library-panel .film-card:hover strong,
-  .library-panel .film-card:focus-within strong { font-size: 15px; }
-  .library-panel .film-card:hover small,
-  .library-panel .film-card:focus-within small { font-size: 12px; }
 }

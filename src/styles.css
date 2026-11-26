@@ -107,17 +107,18 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
 .tier-dropzone { display: flex; align-items: center; align-content: center; flex-wrap: wrap; gap: 10px; min-height: 90px; padding: 11px 14px; background: rgba(10,23,19,.45); transition: background .2s, box-shadow .2s; }
 .tier-dropzone.is-over { background: #233d32; box-shadow: inset 0 0 0 3px rgba(208,91,103,.25); }
 .tier-dropzone:empty::after { content: "pretiahni sem"; color: #71847a; font-size: 11px; }
-.film-card { position: relative; width: 76px; padding: 0; overflow: hidden; border: 1px solid #345247; border-radius: 5px; background: #1a3028; box-shadow: 0 5px 12px rgba(0,0,0,.2); text-align: left; transition: transform .2s cubic-bezier(.2,.8,.2,1), box-shadow .2s ease, outline .16s; }
+.film-card { position: relative; width: 106px; padding: 0; overflow: hidden; border: 1px solid #345247; border-radius: 5px; background: #1a3028; box-shadow: 0 5px 12px rgba(0,0,0,.2); text-align: left; transition: transform .2s cubic-bezier(.2,.8,.2,1), box-shadow .2s ease, outline .16s; }
 .film-card:hover { transform: translateY(-3px); box-shadow: 0 10px 18px rgba(0,0,0,.3); }
 .film-card.is-selected { outline: 3px solid var(--gold); outline-offset: 2px; }
 .film-card-main { display: block; width: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
 .film-card img { display: block; width: 100%; height: 114px; object-fit: cover; background: linear-gradient(135deg, #18382d, #d1aa62); }
 .card-meta { display: block; padding: 6px; background: #1a3028; }
-.film-card strong { display: -webkit-box; overflow: hidden; color: var(--ink); font-size: 10px; line-height: 1.12; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.film-card strong { display: block; overflow: visible; color: var(--ink); font-size: 10px; line-height: 1.18; overflow-wrap: anywhere; }
 .film-card small { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; }
 .film-info-button { position: absolute; top: 5px; right: 5px; display: grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 1px solid rgba(247,241,231,.66); border-radius: 50%; background: rgba(8,17,14,.72); color: #fff; font-family: Georgia, serif; font-size: 12px; font-weight: 700; line-height: 1; opacity: .88; transition: background .2s ease, color .2s ease, transform .2s ease; }
 .film-info-button:hover, .film-info-button:focus-visible { background: var(--gold); color: #142821; transform: scale(1.08); }
-.tier-dropzone .film-card { width: 68px; }
+.film-library .film-card { width: 106px; }
+.tier-dropzone .film-card { width: 88px; }
 .tier-dropzone .film-card img { height: 102px; }
 
 .library-bar { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 32px 0 12px; }
@@ -201,7 +202,7 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
   .film-card img { height: 104px; }
   .tier-dropzone .film-card { width: 60px; }
   .tier-dropzone .film-card img { height: 90px; }
-  .film-library { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 8px; }
+  .film-library { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px; }
   .film-library .film-card { width: 100%; }
   .library-bar { margin-top: 26px; }
   .search-box { width: 135px; }

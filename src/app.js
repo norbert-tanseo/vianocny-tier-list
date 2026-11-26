@@ -345,6 +345,7 @@ function createFilmCard(film) {
   card.className = 'film-card';
   card.draggable = true;
   card.dataset.filmId = film.id;
+  card.title = film.title;
   card.innerHTML = `<button class="film-card-main" type="button" aria-label="${film.title}, ${film.year}"><img loading="eager" decoding="async" src="${film.image}" alt="${film.title} — náhľad" /><span class="card-meta"><strong>${film.title}</strong><small>${film.year}</small></span></button><button class="film-info-button" type="button" aria-label="O filme ${film.title}">i</button>`;
   card.querySelector('img').addEventListener('error', (event) => { event.currentTarget.onerror = null; event.currentTarget.src = posterPlaceholder(film); });
   card.addEventListener('dragstart', (event) => { event.dataTransfer.setData('text/plain', film.id); card.classList.add('is-selected'); });

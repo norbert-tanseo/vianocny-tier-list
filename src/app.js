@@ -233,13 +233,16 @@ function initSnowfall() {
   const randomFlake = (startAtTop = false) => ({
     x: Math.random() * width,
     y: startAtTop ? -Math.random() * height : Math.random() * height,
-    radius: .35 + Math.random() * 1.7,
-    speed: .18 + Math.random() * .9,
-    sway: .25 + Math.random() * 1.15,
-    drift: .2 + Math.random() * 1.25,
+    depth: .16 + Math.random() * .84,
+    radius: .32 + Math.random() * 1.45,
+    fallSpeed: 8 + Math.random() * 20,
+    verticalSpeed: 10 + Math.random() * 12,
+    horizontalSpeed: (Math.random() - .5) * 5,
+    windResponse: .4 + Math.random() * 1.15,
+    sway: .3 + Math.random() * 1.4,
     phase: Math.random() * Math.PI * 2,
-    opacity: .14 + Math.random() * .5,
-    soft: Math.random() < .18,
+    opacity: .1 + Math.random() * .46,
+    soft: Math.random() < .22,
   });
   const resize = () => {
     ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -253,19 +256,29 @@ function initSnowfall() {
   };
   let previousTime = 0;
   const draw = (time) => {
-    const elapsed = Math.min(34, time - previousTime || 16);
+    const elapsed = Math.min(50, time - previousTime || 16) / 1000;
     previousTime = time;
     context.clearRect(0, 0, width, height);
-    const wind = Math.sin(time * .00013) * .26 + Math.sin(time * .000037) * .18;
+    const slowWind = Math.sin(time * .00011) * 7 + Math.sin(time * .000043 + 1.7) * 4;
+    const gust = Math.sin(time * .00031 + .7) * 3 + Math.sin(time * .00073 + 2.1) * 1.5;
     flakes.forEach((flake) => {
-      flake.y += flake.speed * elapsed * .055;
-      flake.x += (wind + Math.sin(time * .00035 * flake.sway + flake.phase) * flake.drift) * elapsed * .035;
+      const localBreeze = Math.sin(time * .00048 * flake.sway + flake.phase) * 2.5 + Math.sin(time * .00019 + flake.phase * 1.7) * 1.4;
+      const targetHorizontalSpeed = (slowWind + gust + localBreeze) * flake.windResponse * flake.depth;
+      const targetVerticalSpeed = flake.fallSpeed + Math.sin(time * .00027 + flake.phase) * 1.8;
+      const inertia = Math.min(1, elapsed * 1.6);
+      flake.horizontalSpeed += (targetHorizontalSpeed - flake.horizontalSpeed) * inertia;
+      flake.verticalSpeed += (targetVerticalSpeed - flake.verticalSpeed) * Math.min(1, elapsed * 1.1);
+      flake.x += flake.horizontalSpeed * elapsed;
+      flake.y += flake.verticalSpeed * elapsed;
       if (flake.y > height + 8 || flake.x < -12 || flake.x > width + 12) Object.assign(flake, randomFlake(true));
       context.beginPath();
       context.globalAlpha = flake.opacity;
       context.fillStyle = '#f7f1e7';
-      if (flake.soft) context.shadowBlur = 5;
-      context.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+      if (flake.soft) {
+        context.shadowBlur = 5 + flake.depth * 3;
+        context.shadowColor = 'rgba(247,241,231,.45)';
+      }
+      context.ellipse(flake.x, flake.y, flake.radius, flake.radius * (.72 + flake.depth * .24), flake.horizontalSpeed * .018, 0, Math.PI * 2);
       context.fill();
       context.shadowBlur = 0;
     });

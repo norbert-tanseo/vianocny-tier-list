@@ -235,10 +235,10 @@ function initSnowfall() {
     y: startAtTop ? -Math.random() * height : Math.random() * height,
     depth: .16 + Math.random() * .84,
     radius: .32 + Math.random() * 1.45,
-    fallSpeed: 8 + Math.random() * 20,
-    verticalSpeed: 10 + Math.random() * 12,
-    horizontalSpeed: (Math.random() - .5) * 5,
-    windResponse: .4 + Math.random() * 1.15,
+    fallSpeed: 18 + Math.random() * 38,
+    verticalSpeed: 22 + Math.random() * 18,
+    horizontalSpeed: (Math.random() - .5) * 22,
+    windResponse: .65 + Math.random() * 1.1,
     sway: .3 + Math.random() * 1.4,
     phase: Math.random() * Math.PI * 2,
     opacity: .1 + Math.random() * .46,
@@ -255,19 +255,26 @@ function initSnowfall() {
     flakes = Array.from({ length: count }, () => randomFlake());
   };
   let previousTime = 0;
+  let wind = 0;
+  let windTarget = 0;
+  let nextWindShift = 0;
   const draw = (time) => {
     const elapsed = Math.min(50, time - previousTime || 16) / 1000;
     previousTime = time;
     context.clearRect(0, 0, width, height);
-    const slowWind = Math.sin(time * .00011) * 7 + Math.sin(time * .000043 + 1.7) * 4;
-    const gust = Math.sin(time * .00031 + .7) * 3 + Math.sin(time * .00073 + 2.1) * 1.5;
+    if (time > nextWindShift) {
+      windTarget = (Math.random() - .5) * (55 + Math.random() * 70);
+      nextWindShift = time + 1100 + Math.random() * 3300;
+    }
+    wind += (windTarget - wind) * Math.min(1, elapsed * .7);
+    const gust = Math.sin(time * .0011) * 5 + Math.sin(time * .00043 + 2.1) * 4;
     flakes.forEach((flake) => {
-      const localBreeze = Math.sin(time * .00048 * flake.sway + flake.phase) * 2.5 + Math.sin(time * .00019 + flake.phase * 1.7) * 1.4;
-      const targetHorizontalSpeed = (slowWind + gust + localBreeze) * flake.windResponse * flake.depth;
-      const targetVerticalSpeed = flake.fallSpeed + Math.sin(time * .00027 + flake.phase) * 1.8;
-      const inertia = Math.min(1, elapsed * 1.6);
+      const localBreeze = Math.sin(time * .00082 * flake.sway + flake.phase) * 8 + Math.sin(time * .00029 + flake.phase * 1.7) * 5;
+      const targetHorizontalSpeed = (wind * flake.windResponse * (.5 + flake.depth) + gust + localBreeze) * (0.72 + flake.depth * .42);
+      const targetVerticalSpeed = flake.fallSpeed + Math.sin(time * .00037 + flake.phase) * 3;
+      const inertia = Math.min(1, elapsed * 2.1);
       flake.horizontalSpeed += (targetHorizontalSpeed - flake.horizontalSpeed) * inertia;
-      flake.verticalSpeed += (targetVerticalSpeed - flake.verticalSpeed) * Math.min(1, elapsed * 1.1);
+      flake.verticalSpeed += (targetVerticalSpeed - flake.verticalSpeed) * Math.min(1, elapsed * 1.45);
       flake.x += flake.horizontalSpeed * elapsed;
       flake.y += flake.verticalSpeed * elapsed;
       if (flake.y > height + 8 || flake.x < -12 || flake.x > width + 12) Object.assign(flake, randomFlake(true));

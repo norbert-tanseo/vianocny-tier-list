@@ -131,7 +131,6 @@ const FILM_DETAILS = {
 };
 
 const WEIGHTS = { S: 5, A: 4, B: 3, C: 2, D: 1 };
-const MAX_FILMS_PER_TIER = 3;
 const NAME_STORAGE_KEY = 'vianocny-tier-list.name';
 const VOTED_STORAGE_KEY = 'vianocny-tier-list.voted-categories';
 const filmById = Object.fromEntries(FILMS.map((film) => [film.id, film]));
@@ -376,13 +375,6 @@ function getFilmCard(film) {
 
 function moveFilm(filmId, tier) {
   if (!filmById[filmId] || filmById[filmId].category !== activeCategoryId) return;
-  const alreadyInTier = rankings()[filmId] === tier;
-  const tierCount = Object.values(rankings()).filter((value) => value === tier).length;
-  if (!alreadyInTier && tierCount >= MAX_FILMS_PER_TIER) {
-    boardNotice = `Tier ${tier} je plný — maximum sú ${MAX_FILMS_PER_TIER} tituly.`;
-    renderBoard();
-    return;
-  }
   boardNotice = '';
   rankings()[filmId] = tier;
   selectedFilmId = null;
@@ -437,7 +429,7 @@ function renderHeroStats() {
   els.heroStats.innerHTML = `
     <article class="hero-stat hero-stat-leader"><span class="hero-stat-kicker">Zatiaľ jednoznačne vyhráva</span><strong>${leader ? leader.film.title : 'Čaká na prvé hlasy'}</strong><small>${leader ? `${leader.score.toFixed(1)} bodu · ${leader.total} ${leader.total === 1 ? 'hlas' : 'hlasov'}` : 'Komunita ešte len začína rozhodovať'}</small></article>
     <article class="hero-stat"><span class="hero-stat-kicker">Najviac pozornosti zbiera</span><strong>${busiest.count ? busiest.category.label : 'Vianočný výber'}</strong><small>${busiest.count ? `${busiest.count} ${busiest.count === 1 ? 'človek už zoradil' : 'ľudia už zoradili'}` : 'Vyber kategóriu a začni'}</small></article>
-    <article class="hero-stat"><span class="hero-stat-kicker">Tvoj sviatočný progress</span><strong>${completed}/4 kategórie</strong><small>${totalSubmissions ? `${totalSubmissions} ${totalSubmissions === 1 ? 'hlas je' : 'hlasov je'} v hre` : 'Jeden browser, jeden hlas v kategórii'}</small></article>`;
+    <article class="hero-stat"><span class="hero-stat-kicker">Tvoj sviatočný progress</span><strong>${completed}/${CATEGORIES.length} kategórií</strong><small>${totalSubmissions ? `${totalSubmissions} ${totalSubmissions === 1 ? 'hlas je' : 'hlasov je'} v hre` : 'Jeden browser, jeden hlas v kategórii'}</small></article>`;
 }
 
 function renderPreview() {

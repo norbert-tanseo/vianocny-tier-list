@@ -1,5 +1,4 @@
 const VALID_TIERS = new Set(['S', 'A', 'B', 'C', 'D']);
-const MAX_FILMS_PER_TIER = 3;
 const FILM_CATEGORY = {
   klaus: 'animaky', grinch: 'animaky', 'grinch-animated': 'animaky', 'polar-express': 'animaky', 'christmas-carol': 'animaky', 'legendary-guardians': 'animaky',
   'nightmare-before-christmas': 'animaky', 'arthur-christmas': 'animaky', 'mickey-christmas-carol': 'animaky', snowman: 'animaky', 'robin-robin': 'animaky', 'the-star': 'animaky',
@@ -49,11 +48,9 @@ export async function onRequestPost({ request, env }) {
   if (!name) return json({ error: 'Name is required.' }, 400);
   const entries = Object.entries(rankings);
   const expectedFilms = Object.entries(FILM_CATEGORY).filter(([, filmCategory]) => filmCategory === categoryId).map(([filmId]) => filmId);
-  const tierCounts = Object.values(rankings).reduce((counts, tier) => ({ ...counts, [tier]: (counts[tier] || 0) + 1 }), {});
   const completeCategory = expectedFilms.length === entries.length && expectedFilms.every((filmId) => rankings[filmId]);
   const validEntries = entries.every(([filmId, tier]) => VALID_FILMS.has(filmId) && FILM_CATEGORY[filmId] === categoryId && VALID_TIERS.has(tier));
-  const validLimits = Object.values(tierCounts).every((count) => count <= MAX_FILMS_PER_TIER);
-  if (!categoryId || !completeCategory || !validEntries || !validLimits) return json({ error: 'Complete rankings with max. 3 titles per tier are required.' }, 400);
+  if (!categoryId || !completeCategory || !validEntries) return json({ error: 'Complete rankings with every title assigned to one tier are required.' }, 400);
 
   const submissionId = crypto.randomUUID();
   const statements = entries.map(([filmId, tier]) => env.DB.prepare('INSERT INTO votes (submission_id, display_name, film_id, tier) VALUES (?, ?, ?, ?)').bind(submissionId, name, filmId, tier));

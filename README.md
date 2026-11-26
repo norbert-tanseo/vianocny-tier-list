@@ -23,4 +23,4 @@ Po vytvorení D1 databázy `vianocny-tier-list` spusti `schema.sql` a nastav bin
 
 ## Metodológia
 
-Každý návštevník zoradí filmy v jednej kategórii do tierov S–D a môže hlas uložiť pod menom alebo prezývkou. Komunitné skóre je vážený priemer: S = 5, A = 4, B = 3, C = 2, D = 1. Kategórie sú Animáky, Americké, Československé a Ostatné.
+Každý návštevník zoradí všetky filmy v jednej kategórii do tierov S–D a môže hlas uložiť pod menom alebo prezývkou. Počet titulov v jednom tiere nie je obmedzený; dôležité je, aby každý titul skončil práve v jednom tiere. Komunitné skóre je vážený priemer: S = 5, A = 4, B = 3, C = 2, D = 1. Kategórie sú Animáky, Americké, Československé, Britské & európske a Kultové & netradičné.

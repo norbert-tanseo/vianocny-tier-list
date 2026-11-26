@@ -82,31 +82,37 @@
           </div>
           <div class="rules-note"><span>Pravidlo</span><strong>Každý titul patrí práve do jedného tieru · bez limitu</strong></div>
 
-          <div class="tier-legend" aria-label="Význam tierov">
-            <span class="tier-legend-title">Čo znamenajú tiery</span>
-            <div class="tier-legend-items">
-              <span class="tier-legend-item tier-legend-s"><b>S</b><span>Bez toho sa Vianoce nerátajú.</span></span>
-              <span class="tier-legend-item tier-legend-a"><b>A</b><span>Vianočná klasika, rád si ju pustím.</span></span>
-              <span class="tier-legend-item tier-legend-b"><b>B</b><span>Dobré, ale nie je to povinná jazda.</span></span>
-              <span class="tier-legend-item tier-legend-c"><b>C</b><span>Keď nič lepšie nie je.</span></span>
-              <span class="tier-legend-item tier-legend-d"><b>D</b><span>Netuším, čo to je, alebo to už nechcem vidieť.</span></span>
+          <div class="builder-workspace">
+            <div class="tier-panel">
+              <div class="tier-legend" aria-label="Význam tierov">
+                <span class="tier-legend-title">Čo znamenajú tiery</span>
+                <div class="tier-legend-items">
+                  <span class="tier-legend-item tier-legend-s"><b>S</b><span>Bez toho sa Vianoce nerátajú.</span></span>
+                  <span class="tier-legend-item tier-legend-a"><b>A</b><span>Vianočná klasika, rád si ju pustím.</span></span>
+                  <span class="tier-legend-item tier-legend-b"><b>B</b><span>Dobré, ale nie je to povinná jazda.</span></span>
+                  <span class="tier-legend-item tier-legend-c"><b>C</b><span>Keď nič lepšie nie je.</span></span>
+                  <span class="tier-legend-item tier-legend-d"><b>D</b><span>Netuším, čo to je, alebo to už nechcem vidieť.</span></span>
+                </div>
+              </div>
+
+              <div class="board" id="board" aria-label="Aktívny tier list">
+                <div class="tier-row tier-s" data-tier="S"><div class="tier-label"><b>S</b></div><div class="tier-dropzone" data-tier="S" aria-label="Tier S"></div></div>
+                <div class="tier-row tier-a" data-tier="A"><div class="tier-label"><b>A</b></div><div class="tier-dropzone" data-tier="A" aria-label="Tier A"></div></div>
+                <div class="tier-row tier-b" data-tier="B"><div class="tier-label"><b>B</b></div><div class="tier-dropzone" data-tier="B" aria-label="Tier B"></div></div>
+                <div class="tier-row tier-c" data-tier="C"><div class="tier-label"><b>C</b></div><div class="tier-dropzone" data-tier="C" aria-label="Tier C"></div></div>
+                <div class="tier-row tier-d" data-tier="D"><div class="tier-label"><b>D</b></div><div class="tier-dropzone" data-tier="D" aria-label="Tier D"></div></div>
+              </div>
+            </div>
+
+            <div class="library-panel">
+              <div class="library-bar">
+                <h3>Filmy</h3>
+                <label class="search-box"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Hľadať" autocomplete="off" /></label>
+              </div>
+              <div class="film-library" id="filmLibrary" aria-label="Filmy na zaradenie"></div>
+              <p class="empty-library" id="emptyLibrary" hidden>Žiadne ďalšie tituly</p>
             </div>
           </div>
-
-          <div class="board" id="board" aria-label="Aktívny tier list">
-            <div class="tier-row tier-s" data-tier="S"><div class="tier-label"><b>S</b></div><div class="tier-dropzone" data-tier="S" aria-label="Tier S"></div></div>
-            <div class="tier-row tier-a" data-tier="A"><div class="tier-label"><b>A</b></div><div class="tier-dropzone" data-tier="A" aria-label="Tier A"></div></div>
-            <div class="tier-row tier-b" data-tier="B"><div class="tier-label"><b>B</b></div><div class="tier-dropzone" data-tier="B" aria-label="Tier B"></div></div>
-            <div class="tier-row tier-c" data-tier="C"><div class="tier-label"><b>C</b></div><div class="tier-dropzone" data-tier="C" aria-label="Tier C"></div></div>
-            <div class="tier-row tier-d" data-tier="D"><div class="tier-label"><b>D</b></div><div class="tier-dropzone" data-tier="D" aria-label="Tier D"></div></div>
-          </div>
-
-          <div class="library-bar">
-            <h3>Filmy</h3>
-            <label class="search-box"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Hľadať" autocomplete="off" /></label>
-          </div>
-          <div class="film-library" id="filmLibrary" aria-label="Filmy na zaradenie"></div>
-          <p class="empty-library" id="emptyLibrary" hidden>Žiadne ďalšie tituly</p>
 
           <div class="submit-row">
             <span id="selectionHint">Zoraď všetky tituly v kategórii</span>

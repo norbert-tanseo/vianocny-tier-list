@@ -235,10 +235,10 @@ function initSnowfall() {
     y: startAtTop ? -Math.random() * height : Math.random() * height,
     depth: .16 + Math.random() * .84,
     radius: .32 + Math.random() * 1.45,
-    fallSpeed: 18 + Math.random() * 38,
-    verticalSpeed: 22 + Math.random() * 18,
+    fallSpeed: 30 + Math.random() * 50,
+    verticalSpeed: 36 + Math.random() * 22,
     horizontalSpeed: (Math.random() - .5) * 22,
-    windResponse: .65 + Math.random() * 1.1,
+    windResponse: .72 + Math.random() * 1.2,
     sway: .3 + Math.random() * 1.4,
     phase: Math.random() * Math.PI * 2,
     opacity: .1 + Math.random() * .46,
@@ -251,23 +251,34 @@ function initSnowfall() {
     canvas.width = width * ratio;
     canvas.height = height * ratio;
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    const count = Math.min(110, Math.max(42, Math.round(width / 13)));
+    const count = Math.min(180, Math.max(74, Math.round(width / 8)));
     flakes = Array.from({ length: count }, () => randomFlake());
   };
   let previousTime = 0;
   let wind = 0;
   let windTarget = 0;
   let nextWindShift = 0;
+  let nextGust = 0;
+  let gustStartedAt = 0;
+  let gustEndsAt = 0;
+  let gustStrength = 0;
   const draw = (time) => {
     const elapsed = Math.min(50, time - previousTime || 16) / 1000;
     previousTime = time;
     context.clearRect(0, 0, width, height);
     if (time > nextWindShift) {
-      windTarget = (Math.random() - .5) * (55 + Math.random() * 70);
+      windTarget = (Math.random() - .5) * (40 + Math.random() * 65);
       nextWindShift = time + 1100 + Math.random() * 3300;
     }
     wind += (windTarget - wind) * Math.min(1, elapsed * .7);
-    const gust = Math.sin(time * .0011) * 5 + Math.sin(time * .00043 + 2.1) * 4;
+    if (time > nextGust) {
+      gustStartedAt = time;
+      gustEndsAt = time + 700 + Math.random() * 1100;
+      gustStrength = (70 + Math.random() * 90) * (Math.random() > .5 ? 1 : -1);
+      nextGust = gustEndsAt + 2600 + Math.random() * 4600;
+    }
+    const gustProgress = gustEndsAt > gustStartedAt ? Math.min(1, Math.max(0, (time - gustStartedAt) / (gustEndsAt - gustStartedAt))) : 1;
+    const gust = Math.sin(gustProgress * Math.PI) * gustStrength + Math.sin(time * .0011) * 5 + Math.sin(time * .00043 + 2.1) * 4;
     flakes.forEach((flake) => {
       const localBreeze = Math.sin(time * .00082 * flake.sway + flake.phase) * 8 + Math.sin(time * .00029 + flake.phase * 1.7) * 5;
       const targetHorizontalSpeed = (wind * flake.windResponse * (.5 + flake.depth) + gust + localBreeze) * (0.72 + flake.depth * .42);

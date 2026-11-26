@@ -274,7 +274,7 @@ function initSnowfall() {
     canvas.width = width * ratio;
     canvas.height = height * ratio;
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    const count = Math.min(180, Math.max(74, Math.round(width / 8)));
+    const count = Math.min(420, Math.max(160, Math.round(width / 4.5)));
     flakes = Array.from({ length: count }, () => randomFlake());
   };
   let previousTime = 0;

@@ -230,6 +230,8 @@ function initSnowfall() {
   let height = 0;
   let ratio = 1;
   let flakes = [];
+  let gusts = [];
+  let nextGustAt = 0;
   const randomFlake = (startAtTop = false) => ({
     x: Math.random() * width,
     y: startAtTop ? -Math.random() * height : Math.random() * height,
@@ -244,6 +246,27 @@ function initSnowfall() {
     opacity: .1 + Math.random() * .46,
     soft: Math.random() < .22,
   });
+  const spawnGust = (time) => {
+    const blizzard = Math.random() < .14;
+    const direction = Math.random() > .5 ? 1 : -1;
+    const duration = blizzard ? 1.5 + Math.random() * 1.7 : .75 + Math.random() * 1.2;
+    const gust = {
+      x: direction > 0 ? -width * .22 : width * 1.22,
+      y: Math.random() * height,
+      radiusX: blizzard ? width * .82 : 110 + Math.random() * 230,
+      radiusY: blizzard ? height * .52 : 90 + Math.random() * 190,
+      direction,
+      strength: (blizzard ? 85 : 38 + Math.random() * 70) * direction,
+      swirl: (blizzard ? 12 : 8 + Math.random() * 18) * (Math.random() > .5 ? 1 : -1),
+      travel: blizzard ? 12 + Math.random() * 22 : 28 + Math.random() * 55,
+      verticalTravel: (Math.random() - .5) * 18,
+      age: 0,
+      duration,
+      born: time,
+    };
+    gusts.push(gust);
+    nextGustAt = time + (blizzard ? 5200 : 1700 + Math.random() * 3900);
+  };
   const resize = () => {
     ratio = Math.min(window.devicePixelRatio || 1, 2);
     width = window.innerWidth;
@@ -255,34 +278,33 @@ function initSnowfall() {
     flakes = Array.from({ length: count }, () => randomFlake());
   };
   let previousTime = 0;
-  let wind = 0;
-  let windTarget = 0;
-  let nextWindShift = 0;
-  let nextGust = 0;
-  let gustStartedAt = 0;
-  let gustEndsAt = 0;
-  let gustStrength = 0;
   const draw = (time) => {
     const elapsed = Math.min(50, time - previousTime || 16) / 1000;
     previousTime = time;
     context.clearRect(0, 0, width, height);
-    if (time > nextWindShift) {
-      windTarget = (Math.random() - .5) * (40 + Math.random() * 65);
-      nextWindShift = time + 1100 + Math.random() * 3300;
-    }
-    wind += (windTarget - wind) * Math.min(1, elapsed * .7);
-    if (time > nextGust) {
-      gustStartedAt = time;
-      gustEndsAt = time + 700 + Math.random() * 1100;
-      gustStrength = (70 + Math.random() * 90) * (Math.random() > .5 ? 1 : -1);
-      nextGust = gustEndsAt + 2600 + Math.random() * 4600;
-    }
-    const gustProgress = gustEndsAt > gustStartedAt ? Math.min(1, Math.max(0, (time - gustStartedAt) / (gustEndsAt - gustStartedAt))) : 1;
-    const gust = Math.sin(gustProgress * Math.PI) * gustStrength + Math.sin(time * .0011) * 5 + Math.sin(time * .00043 + 2.1) * 4;
+    if (time > nextGustAt) spawnGust(time);
+    gusts.forEach((gust) => {
+      gust.age += elapsed;
+      gust.x += gust.direction * gust.travel * elapsed;
+      gust.y += gust.verticalTravel * elapsed;
+    });
+    gusts = gusts.filter((gust) => gust.age < gust.duration);
     flakes.forEach((flake) => {
-      const localBreeze = Math.sin(time * .00082 * flake.sway + flake.phase) * 8 + Math.sin(time * .00029 + flake.phase * 1.7) * 5;
-      const targetHorizontalSpeed = (wind * flake.windResponse * (.5 + flake.depth) + gust + localBreeze) * (0.72 + flake.depth * .42);
-      const targetVerticalSpeed = flake.fallSpeed + Math.sin(time * .00037 + flake.phase) * 3;
+      let horizontalForce = Math.sin(time * .00019 + flake.phase) * 8 + Math.sin(time * .00047 * flake.sway + flake.phase * 1.7) * 4;
+      let verticalForce = Math.sin(time * .00033 + flake.phase) * 2;
+      gusts.forEach((gust) => {
+        const offsetX = (flake.x - gust.x) / gust.radiusX;
+        const offsetY = (flake.y - gust.y) / gust.radiusY;
+        const distance = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
+        if (distance >= 1) return;
+        const influence = (1 - distance) ** 2;
+        const pulse = Math.sin(Math.min(1, gust.age / gust.duration) * Math.PI);
+        horizontalForce += gust.strength * pulse * influence;
+        horizontalForce += -offsetY * gust.swirl * pulse * influence;
+        verticalForce += offsetX * gust.swirl * .48 * pulse * influence;
+      });
+      const targetHorizontalSpeed = horizontalForce * flake.windResponse * (.72 + flake.depth * .42);
+      const targetVerticalSpeed = Math.max(10, flake.fallSpeed + verticalForce);
       const inertia = Math.min(1, elapsed * 2.1);
       flake.horizontalSpeed += (targetHorizontalSpeed - flake.horizontalSpeed) * inertia;
       flake.verticalSpeed += (targetVerticalSpeed - flake.verticalSpeed) * Math.min(1, elapsed * 1.45);

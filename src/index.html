@@ -49,6 +49,8 @@
         <p class="intro-note">Vyber kategóriu. Rozhodni za seba.</p>
       </section>
 
+      <section class="hero-stats" id="heroStats" aria-label="Aktuálne štatistiky komunity"></section>
+
       <section class="view-section" id="overviewView">
         <section class="preview-section" id="prehlad">
           <div class="section-topline">
@@ -120,6 +122,13 @@
       </form>
     </dialog>
 
-    <script src="./app.js?v=catalog-13" type="module"></script>
+    <dialog class="film-dialog" id="filmDialog">
+      <form method="dialog" class="film-dialog-shell">
+        <button class="dialog-close" value="cancel" aria-label="Zavrieť detail filmu">×</button>
+        <div id="filmDetail"></div>
+      </form>
+    </dialog>
+
+    <script src="./app.js?v=catalog-14" type="module"></script>
   </body>
 </html>

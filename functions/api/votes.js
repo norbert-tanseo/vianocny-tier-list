@@ -3,12 +3,12 @@ const MAX_FILMS_PER_TIER = 3;
 const FILM_CATEGORY = {
   klaus: 'animaky', grinch: 'animaky', 'grinch-animated': 'animaky', 'polar-express': 'animaky', 'christmas-carol': 'animaky', 'legendary-guardians': 'animaky',
   'nightmare-before-christmas': 'animaky', 'arthur-christmas': 'animaky', 'mickey-christmas-carol': 'animaky', snowman: 'animaky', 'robin-robin': 'animaky', 'the-star': 'animaky',
-  'home-alone': 'americke', 'home-alone-2': 'americke', elf: 'americke', 'christmas-vacation': 'americke', 'santa-clause': 'americke',
+  'home-alone': 'americke', 'home-alone-2': 'americke', 'home-alone-3': 'americke', 'home-alone-4': 'americke', 'home-alone-5': 'americke', 'home-sweet-home-alone': 'americke', elf: 'americke', 'christmas-vacation': 'americke', 'santa-clause': 'americke',
   'miracle-34th-street': 'americke', 'four-christmases': 'americke', 'christmas-chronicles': 'americke', 'jingle-all-the-way': 'americke', 'scrooged': 'americke', 'bad-santa': 'americke', 'christmas-story': 'americke', 'dennis-christmas': 'americke', 'jack-frost': 'americke',
   'three-wishes': 'ceskoslovenske', 'with-you-world-fun': 'ceskoslovenske', 'cosy-dens': 'ceskoslovenske', perinbaba: 'ceskoslovenske',
   'salt-gold': 'ceskoslovenske', 'golden-star': 'ceskoslovenske', 'proud-princess': 'ceskoslovenske', 'angel-lord': 'ceskoslovenske', 'angel-lord-2': 'ceskoslovenske', 'three-veterans': 'ceskoslovenske', 'immortal-aunt': 'ceskoslovenske', 'devil-knows-why': 'ceskoslovenske', 'lotrando-zubejda': 'ceskoslovenske', 'cisars-baker-bakers-emperor': 'ceskoslovenske', 'madly-sad-princess': 'ceskoslovenske', 'devils-not-jokes': 'ceskoslovenske', 'rysava-jalovica': 'ceskoslovenske',
-  'love-actually': 'ostatne', 'the-holiday': 'ostatne', 'muppet-carol': 'ostatne', 'family-stone': 'ostatne', gremlins: 'ostatne',
-  'last-christmas': 'ostatne', holdovers: 'ostatne', 'boy-called-christmas': 'ostatne', 'man-who-invented-christmas': 'ostatne', 'family-man': 'ostatne', 'last-holiday': 'ostatne', 'christmas-kranks': 'ostatne',
+  'love-actually': 'europske', 'the-holiday': 'europske', 'last-christmas': 'europske', holdovers: 'europske', 'boy-called-christmas': 'europske', 'man-who-invented-christmas': 'europske',
+  'muppet-carol': 'kultove', 'family-stone': 'kultove', gremlins: 'kultove', 'family-man': 'kultove', 'last-holiday': 'kultove', 'christmas-kranks': 'kultove',
 };
 const VALID_FILMS = new Set(Object.keys(FILM_CATEGORY));
 
@@ -25,7 +25,7 @@ async function readResults(db) {
     results[row.film_id][row.tier] = Number(row.votes);
   }
   const count = await db.prepare('SELECT COUNT(DISTINCT submission_id) AS submissions FROM votes').first();
-  const categorySubmissions = Object.fromEntries(['animaky', 'americke', 'ceskoslovenske', 'ostatne'].map((categoryId) => [categoryId, new Set()]));
+  const categorySubmissions = Object.fromEntries(['animaky', 'americke', 'ceskoslovenske', 'europske', 'kultove'].map((categoryId) => [categoryId, new Set()]));
   for (const row of submissionRows.results || []) {
     const categoryId = FILM_CATEGORY[row.film_id];
     if (categoryId) categorySubmissions[categoryId].add(row.submission_id);

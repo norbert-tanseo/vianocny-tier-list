@@ -2,7 +2,8 @@ const CATEGORIES = [
   { id: 'animaky', label: 'Animáky', note: 'Rozprávky' },
   { id: 'americke', label: 'Americké', note: 'Hrané filmy' },
   { id: 'ceskoslovenske', label: 'Československé', note: 'Klasiky' },
-  { id: 'ostatne', label: 'Ostatné', note: 'Vianočný mix' },
+  { id: 'europske', label: 'Britské & európske', note: 'Romantika a drámy' },
+  { id: 'kultove', label: 'Kultové & netradičné', note: 'Vianočný mix' },
 ];
 
 const FILMS = [
@@ -20,6 +21,10 @@ const FILMS = [
   { id: 'legendary-guardians', category: 'animaky', title: 'Legendárna partia', year: 2012, image: 'https://upload.wikimedia.org/wikipedia/en/9/92/Rise_of_the_Guardians_poster.jpg' },
   { id: 'home-alone', category: 'americke', title: 'Sám doma', year: 1990, image: 'https://upload.wikimedia.org/wikipedia/en/7/76/Home_alone_poster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled' },
   { id: 'home-alone-2', category: 'americke', title: 'Sám doma 2: Stratený v New Yorku', year: 1992, image: 'https://upload.wikimedia.org/wikipedia/en/5/50/Home_Alone_2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled' },
+  { id: 'home-alone-3', category: 'americke', title: 'Sám doma 3', year: 1997, image: 'https://www.impawards.com/1997/posters/home_alone_three_xxlg.jpg' },
+  { id: 'home-alone-4', category: 'americke', title: 'Sám doma 4', year: 2002, image: 'https://image.tmdb.org/t/p/original/qRktvMOO2QaCL7gvNyvZDoxPOZj.jpg?t=1770616637' },
+  { id: 'home-alone-5', category: 'americke', title: 'Sám doma 5: Vianočná lúpež', year: 2012, image: 'https://image.tmdb.org/t/p/original/6bZdqzK3le84IVUIJCppYMG7UeA.jpg' },
+  { id: 'home-sweet-home-alone', category: 'americke', title: 'Všade dobre, sám doma najlepšie', year: 2021, image: 'https://image.tmdb.org/t/p/original/fP3VvqUjEBjawxZHL4sYCq2ZdJD.jpg' },
   { id: 'elf', category: 'americke', title: 'Elf', year: 2003, image: 'https://upload.wikimedia.org/wikipedia/en/d/df/Elf_movie.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled' },
   { id: 'christmas-vacation', category: 'americke', title: 'Bláznivé Vianoce', year: 1989, image: 'https://filmartgallery.com/cdn/shop/files/National-Lampoons-Christmas-Vacation-Vintage-Movie-Poster-Original_19dd8462_2000x.jpg?v=1741230650' },
   { id: 'santa-clause', category: 'americke', title: 'Santa Claus', year: 1994, image: 'https://www.originalfilmart.co.uk/cdn/shop/products/SantaClause_1994_original_film_art_5000x.jpg?v=1640388246' },
@@ -49,18 +54,18 @@ const FILMS = [
   { id: 'madly-sad-princess', category: 'ceskoslovenske', title: 'Šíleně smutná princezna', year: 1968, image: 'https://prod-fdb-storage.fra1.cdn.digitaloceanspaces.com/thumbnails/w3840/galleries/n6zg2g7te7lbcw0holwn.jpeg' },
   { id: 'devils-not-jokes', category: 'ceskoslovenske', title: 'S čerty nejsou žerty', year: 1984, image: 'https://nfa.fra1.cdn.digitaloceanspaces.com/assets/filmy/scnz-poster.jpg' },
   { id: 'rysava-jalovica', category: 'ceskoslovenske', title: 'Rysavá jalovica', year: 1970, image: 'https://www.niagara.sk/images/products/big/rysava-jalovica.jpg' },
-  { id: 'love-actually', category: 'ostatne', title: 'Láska nebeská', year: 2003, image: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Love_Actually_movie.jpg' },
-  { id: 'the-holiday', category: 'ostatne', title: 'Prázdniny', year: 2006, image: 'https://media.jutarnji.hr/images/slike/2022/12/07/27231099.jpg' },
-  { id: 'muppet-carol', category: 'ostatne', title: 'Vianočná koleda Muppetov', year: 1992, image: 'https://upload.wikimedia.org/wikipedia/en/9/95/Muppet_christmas_carol.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled' },
-  { id: 'family-stone', category: 'ostatne', title: 'The Family Stone', year: 2005, image: 'https://m.media-amazon.com/images/M/MV5BNzY4ZGZjNDktMTBhMS00OWQ3LWIxZDItNGU5NjcyYzYxYTVhXkEyXkFqcGc%40._V1_.jpg' },
-  { id: 'gremlins', category: 'ostatne', title: 'Gremlins', year: 1984, image: 'https://www.mauvais-genres.com/32021-thickbox_default/gremlins-original-movie-poster-adv-27x41-in-1984-joe-dante-zach-galligan.jpg' },
-  { id: 'last-christmas', category: 'ostatne', title: 'Posledné Vianoce', year: 2019, image: 'https://br.web.img2.acsta.net/pictures/19/09/11/15/31/3986826.jpg' },
-  { id: 'holdovers', category: 'ostatne', title: 'Zimné prázdniny', year: 2023, image: 'https://m.media-amazon.com/images/M/MV5BNDc2MzNkMjMtZDY5NC00NmQ0LWI1NjctZjRhNWIzZjc4MGRiXkEyXkFqcGdeQXVyMjkwOTAyMDU%40._V1_FMjpg_UX1000_.jpg' },
-  { id: 'boy-called-christmas', category: 'ostatne', title: 'Chlapec menom Vianoce', year: 2021, image: 'https://cdn1.naekranie.pl/media/cache/amp/2021/11/Ch%C5%82opiec%20zwany%20Gwiazdk%C4%85_619e31dbd3faa.jpeg' },
-  { id: 'man-who-invented-christmas', category: 'ostatne', title: 'Muž, ktorý vynašiel Vianoce', year: 2017, image: 'https://m.media-amazon.com/images/M/MV5BMTYwMjk1MTUzM15BMl5BanBnXkFtZTgwNDM2ODgwNDI%40._V1_.jpg' },
-  { id: 'family-man', category: 'ostatne', title: 'Rodinný muž', year: 2000, image: 'https://m.media-amazon.com/images/M/MV5BYzYzMTQ4NDYtNWRkZi00NTYxLThlZDItMzI1MmU1MmU5ZWQ3XkEyXkFqcGdeQXVyNDA5Mjg5MjA%40._V1_FMjpg_UX1000_.jpg' },
-  { id: 'last-holiday', category: 'ostatne', title: 'Posledné prázdniny', year: 2006, image: 'https://public-website-assets.paramountpictures.com/paramount2025/s3fs-public/styles/poster_medium/public/lastholiday_en_800x1200.jpg?itok=EHBA1KdS' },
-  { id: 'christmas-kranks', category: 'ostatne', title: 'Vianoce u Krankov', year: 2004, image: 'https://i.pinimg.com/originals/31/4c/8d/314c8d922ed12029bef2082c65a98abc.jpg' },
+  { id: 'love-actually', category: 'europske', title: 'Láska nebeská', year: 2003, image: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Love_Actually_movie.jpg' },
+  { id: 'the-holiday', category: 'europske', title: 'Prázdniny', year: 2006, image: 'https://media.jutarnji.hr/images/slike/2022/12/07/27231099.jpg' },
+  { id: 'last-christmas', category: 'europske', title: 'Posledné Vianoce', year: 2019, image: 'https://br.web.img2.acsta.net/pictures/19/09/11/15/31/3986826.jpg' },
+  { id: 'holdovers', category: 'europske', title: 'Zimné prázdniny', year: 2023, image: 'https://m.media-amazon.com/images/M/MV5BNDc2MzNkMjMtZDY5NC00NmQ0LWI1NjctZjRhNWIzZjc4MGRiXkEyXkFqcGdeQXVyMjkwOTAyMDU%40._V1_FMjpg_UX1000_.jpg' },
+  { id: 'boy-called-christmas', category: 'europske', title: 'Chlapec menom Vianoce', year: 2021, image: 'https://cdn1.naekranie.pl/media/cache/amp/2021/11/Ch%C5%82opiec%20zwany%20Gwiazdk%C4%85_619e31dbd3faa.jpeg' },
+  { id: 'man-who-invented-christmas', category: 'europske', title: 'Muž, ktorý vynašiel Vianoce', year: 2017, image: 'https://m.media-amazon.com/images/M/MV5BMTYwMjk1MTUzM15BMl5BanBnXkFtZTgwNDM2ODgwNDI%40._V1_.jpg' },
+  { id: 'muppet-carol', category: 'kultove', title: 'Vianočná koleda Muppetov', year: 1992, image: 'https://upload.wikimedia.org/wikipedia/en/9/95/Muppet_christmas_carol.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled' },
+  { id: 'family-stone', category: 'kultove', title: 'The Family Stone', year: 2005, image: 'https://m.media-amazon.com/images/M/MV5BNzY4ZGZjNDktMTBhMS00OWQ3LWIxZDItNGU5NjcyYzYxYTVhXkEyXkFqcGc%40._V1_.jpg' },
+  { id: 'gremlins', category: 'kultove', title: 'Gremlins', year: 1984, image: 'https://www.mauvais-genres.com/32021-thickbox_default/gremlins-original-movie-poster-adv-27x41-in-1984-joe-dante-zach-galligan.jpg' },
+  { id: 'family-man', category: 'kultove', title: 'Rodinný muž', year: 2000, image: 'https://m.media-amazon.com/images/M/MV5BYzYzMTQ4NDYtNWRkZi00NTYxLThlZDItMzI1MmU1MmU5ZWQ3XkEyXkFqcGdeQXVyNDA5Mjg5MjA%40._V1_FMjpg_UX1000_.jpg' },
+  { id: 'last-holiday', category: 'kultove', title: 'Posledné prázdniny', year: 2006, image: 'https://public-website-assets.paramountpictures.com/paramount2025/s3fs-public/styles/poster_medium/public/lastholiday_en_800x1200.jpg?itok=EHBA1KdS' },
+  { id: 'christmas-kranks', category: 'kultove', title: 'Vianoce u Krankov', year: 2004, image: 'https://i.pinimg.com/originals/31/4c/8d/314c8d922ed12029bef2082c65a98abc.jpg' },
 ];
 
 const FILM_DETAILS = {
@@ -78,6 +83,10 @@ const FILM_DETAILS = {
   'legendary-guardians': 'Keď Pitch začne ohrozovať detské sny, Santa, Zúbková víla, Sandman, Veľkonočný zajac a Jack Frost musia spojiť sily.',
   'home-alone': 'Kevin zostane na Vianoce sám doma a musí ochrániť dom pred dvojicou nešikovných zlodejov. Z improvizovaných pascí sa stane sviatočná klasika.',
   'home-alone-2': 'Kevin sa v New Yorku opäť stretne s Harrym a Marvom. Tentoraz chráni hotel aj hračkárstvo a pritom objaví, že na Vianoce nikto nechce zostať sám.',
+  'home-alone-3': 'Osemročný Alex zostane doma s ovčími kiahňami, zatiaľ čo skupina špiónov hľadá počítačový čip ukrytý v jeho hračkárskom autíčku. Keď vtrhnú do domu, Alex si pripraví vlastné pasce.',
+  'home-alone-4': 'Kevin trávi Vianoce v sídle otcovej priateľky, kde sa znovu objaví Marv so svojou pomocníčkou. Kevin musí prekaziť lúpež a zároveň dúfa, že dá rodičov opäť dohromady.',
+  'home-alone-5': 'Finn Baxter sa s rodinou presťahuje do nového domu a myslí si, že v ňom straší. Keď sa objavia zlodeji, on a jeho sestra premenia dom na prekážkovú dráhu plnú pascí.',
+  'home-sweet-home-alone': 'Max Mercer zostane cez sviatky sám doma, kým je jeho rodina v Japonsku. Manželský pár sa pokúsi dostať k vzácnemu dedičstvu v dome a Max ho bráni po svojom.',
   elf: 'Buddy, človek vychovaný škriatkami, odíde zo Severného pólu hľadať svojho otca do New Yorku. Jeho detská úprimnosť narazí na dospelý svet.',
   'christmas-vacation': 'Clark Griswold chce rodine pripraviť dokonalé Vianoce. Svetlá, návštevy aj susedia však jeho plán postupne menia na veľký sviatočný chaos.',
   'santa-clause': 'Po nečakanej nehode Santa Clausa preberie Scott Calvin jeho úlohu. S novým bruchom, bradou a povinnosťami zisťuje, čo znamená byť Santom.',
@@ -190,7 +199,7 @@ function nextUnvotedCategoryId(currentCategoryId) {
 }
 function escapeSvg(value) { return String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[character])); }
 function posterPlaceholder(film) {
-  const palette = { animaky: ['#0f4a38', '#d8b15e'], americke: ['#8e2638', '#f0c874'], ceskoslovenske: ['#1e5361', '#e4b766'], ostatne: ['#5d2d3d', '#d5b26c'] }[film.category] || ['#123b2e', '#d0a451'];
+  const palette = { animaky: ['#0f4a38', '#d8b15e'], americke: ['#8e2638', '#f0c874'], ceskoslovenske: ['#1e5361', '#e4b766'], europske: ['#24556a', '#e1bf78'], kultove: ['#5d2d3d', '#d5b26c'] }[film.category] || ['#123b2e', '#d0a451'];
   const words = film.title.split(' ');
   const lines = [];
   let line = '';

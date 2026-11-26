@@ -65,8 +65,8 @@ const FILMS = [
 
 const FILM_DETAILS = {
   klaus: 'Poštár Jesper sa ocitne v zamrznutom meste plnom hádok. S tajomným výrobcom hračiek Klausom začne potichu meniť jeho atmosféru darčekmi a láskavosťou.',
-  grinch: 'Zelený samotár z hory neznáša vianočný ruch v Ktosicove, a tak sa rozhodne ukradnúť Vianoce. Malá Cindy-Lou mu však pripomenie, čo na nich naozaj záleží.',
-  'grinch-animated': 'Grinch žije s verným Maxom nad Ktosicovom a plánuje obyvateľom prekaziť sviatky. Animovaná verzia rozpráva o tom, ako sa aj najväčší mrzút môže zmeniť.',
+  grinch: 'Zelený samotár z hory neznáša vianočný ruch v mestečku, a tak sa rozhodne ukradnúť Vianoce. Malá Cindy-Lou mu však pripomenie, čo na nich naozaj záleží.',
+  'grinch-animated': 'Grinch žije s verným Maxom nad mestečkom a plánuje obyvateľom prekaziť sviatky. Animovaná verzia rozpráva o tom, ako sa aj najväčší mrzút môže zmeniť.',
   'polar-express': 'Chlapec, ktorý začína pochybovať o Santovi, nastúpi na čarovný vlak smerujúci na Severný pól. Nočná cesta je dobrodružstvom o viere a detskej predstavivosti.',
   'christmas-carol': 'Lakomec Ebenezer Scrooge dostane počas Štedrého večera návštevu troch duchov. Ukážu mu minulosť, prítomnosť aj budúcnosť, ktorú si ešte môže zmeniť.',
   'nightmare-before-christmas': 'Jack Skellington objaví Vianočné mestečko a pokúsi sa sviatky uchopiť po svojom. Jeho temne hravý plán sa stretne s realitou sveta, ktorému nerozumie.',
@@ -91,7 +91,7 @@ const FILM_DETAILS = {
   'dennis-christmas': 'Malý Denis sa počas Vianoc ocitne v blízkosti suseda Wilsona a svojou zvedavosťou rozvíri pokojné sviatky. Nevinné nápady spôsobia poriadnu komédiu.',
   'jack-frost': 'Otec, ktorý zomrie pri nehode, sa vďaka kúzlu vráti ako snehuliak. Dostane tak ešte jednu zimu, aby sa zblížil so synom a napravil, čo nestihol.',
   'three-wishes': 'Popoluška stretne v lese princa, ktorý sa ukrýva pred vlastným otcom. Tri čarovné oriešky jej pomôžu nájsť slobodu, lásku aj vlastnú cestu.',
-  'with-you-world-fun': 'Rodinná komédia o partii otcov, ktorí si vyrazia s deťmi na hory. Ich predstava oddychu sa rýchlo zmení na dobrodružstvo plné chaosu a humoru.',
+  'with-you-world-fun': 'Traja otcovia vyrazia s deťmi na chalupu Apalucha v Beskydách. Pánska jazda so šiestimi deťmi sa rýchlo zmení na vyčerpávajúce, ale láskavé zimné dobrodružstvo.',
   'cosy-dens': 'Rodina a priatelia prežívajú posledné Vianoce v spoločnom byte v období spoločenských zmien. Láskavý humor sa mieša s nostalgiou a generačnými konfliktmi.',
   perinbaba: 'Perinbaba dohliada na sneh a osud Jakuba, ktorý vyrastá medzi ľuďmi a kúzlami. Rozprávka spája poetickú zimu s príbehom lásky a dospievania.',
   'salt-gold': 'Kráľ si myslí, že soľ nemá cenu, a vyženie dcéru Marušku. Až keď kráľovstvo pocíti jej absenciu, pochopí význam obyčajných vecí.',
@@ -100,8 +100,8 @@ const FILM_DETAILS = {
   'angel-lord': 'Anjel Petronel dostane poslednú šancu napraviť svoju chybu na zemi. Spolu s čertom Uriášom sa zapletie do ľudských starostí tesne pred Vianocami.',
   'angel-lord-2': 'Petronel s Uriášom sa vracajú na zem, kde musia ochrániť mladú Magdalénu. Do príbehu vstúpi aj čertovský plán a poriadna dávka sviatočného chaosu.',
   'three-veterans': 'Traja vyslúžilci dostanú čarovné dary, ale prídu o ne pre chamtivosť a podvod. Cesta za ich vrátením je plná humoru, dobrodružstva a múdrych ponaučení.',
-  'immortal-aunt': 'Princezná sa po otcovej smrti stretne so silami dobra, zla a nesmrteľnosti. Rozprávka skúša, čo má väčšiu cenu než večný život.',
-  'devil-knows-why': 'Čert sa snaží napraviť svet, v ktorom sú ľudia niekedy horší než pekelníci. Rozprávková komédia mieša lásku, peklo a ľudskú chamtivosť.',
+  'immortal-aunt': 'Dedinský chasník Matej získa vďaka Rozumu nečakanú múdrosť a uchádza sa o princeznú Pavlínku. Ich cestu komplikuje Závisť, ktorá ovládne takmer celý zámok.',
+  'devil-knows-why': 'V kráľovstve Dobromila vládne bieda a moc preberajú chamtiví ľudia aj peklo. Bylinkárka Apolena verí v záchrancu, ktorý má pomôcť princeznej Aničke a krajine.',
   'lotrando-zubejda': 'Syn slávneho lotra Lotrando vyrastie v kláštore a musí sa vydať do sveta. Stretnutie so Zubejdou zmení jeho predstavu o tom, čo je správny život.',
   'cisars-baker-bakers-emperor': 'Cisár Rudolf II. túži po elixíre života a Golemovi, zatiaľ čo pekár Matej sa nečakane dostane k moci. Dvojdielna komédia si robí žarty z panovníkov aj alchýmie.',
   'madly-sad-princess': 'Dve znepriatelené kráľovstvá bránia láske svojich mladých vládcov. Princovia a princezná preto vymyslia plán, ako zastaviť vojnu aj svojich tvrdohlavých otcov.',
@@ -136,6 +136,8 @@ let categoryCounts = Object.fromEntries(CATEGORIES.map((category) => [category.i
 let totalSubmissions = 0;
 let boardNotice = '';
 let viewMode = 'overview';
+let detailScrollPosition = 0;
+let detailTrigger = null;
 
 const els = {
   overviewView: document.querySelector('#overviewView'),
@@ -206,7 +208,9 @@ function filmIntro(film) {
   return FILM_DETAILS[film.id] || `Krátka vianočná filmová zastávka z roku ${film.year}.`;
 }
 
-function openFilmDetail(film) {
+function openFilmDetail(film, trigger = null) {
+  detailScrollPosition = window.scrollY;
+  detailTrigger = trigger;
   els.filmDetail.innerHTML = `<div class="film-detail">
     <div class="film-detail-poster"><img src="${film.image}" alt="${film.title} — náhľad" /></div>
     <div class="film-detail-copy">
@@ -219,6 +223,7 @@ function openFilmDetail(film) {
   const image = els.filmDetail.querySelector('img');
   image.addEventListener('error', () => { image.onerror = null; image.src = posterPlaceholder(film); });
   els.filmDialog.showModal();
+  requestAnimationFrame(() => window.scrollTo(0, detailScrollPosition));
 }
 
 function initSnowfall() {
@@ -350,7 +355,7 @@ function createFilmCard(film) {
     else selectedFilmId = selectedFilmId === film.id ? null : film.id;
     renderBoard();
   });
-  card.querySelector('.film-info-button').addEventListener('click', (event) => { event.stopPropagation(); openFilmDetail(film); });
+  card.querySelector('.film-info-button').addEventListener('click', (event) => { event.stopPropagation(); openFilmDetail(film, event.currentTarget); });
   return card;
 }
 
@@ -547,6 +552,11 @@ els.form.addEventListener('submit', async (event) => {
 });
 
 document.querySelector('.dialog-close').addEventListener('click', () => els.dialog.close());
+els.filmDialog.addEventListener('close', () => {
+  window.scrollTo(0, detailScrollPosition);
+  if (detailTrigger) detailTrigger.focus({ preventScroll: true });
+  detailTrigger = null;
+});
 renderTabs();
 renderBoard();
 renderPreview();

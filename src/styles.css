@@ -10,6 +10,8 @@
   --shadow: 0 14px 34px rgba(0, 0, 0, .22);
 }
 * { box-sizing: border-box; }
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { width: 0; height: 0; display: none; }
 [hidden] { display: none !important; }
 html { scroll-behavior: smooth; }
 body { position: relative; min-height: 100vh; margin: 0; overflow-x: hidden; background: radial-gradient(circle at 50% -10%, #1d4032 0, var(--paper) 46%, #08110e 100%); color: var(--ink); font-family: "DM Sans", system-ui, sans-serif; font-size: 16px; line-height: 1.35; }
@@ -216,7 +218,7 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
   .tier-legend-items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .builder-workspace { grid-template-columns: minmax(0, 1fr) 116px; gap: 8px; align-items: start; }
   .tier-panel { position: sticky; top: 12px; }
-  .library-panel { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; padding-left: 8px; border-left: 1px solid var(--line); scrollbar-width: thin; }
+  .library-panel { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; padding-left: 8px; border-left: 1px solid var(--line); }
   .library-panel .film-library { grid-template-columns: 1fr; gap: 8px; }
   .library-panel .film-card { width: 100%; }
   .library-bar { display: block; }

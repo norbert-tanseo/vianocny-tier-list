@@ -5,9 +5,10 @@ Jednostránková komunitná appka na zoradenie vianočných filmov a rozprávok 
 ## Lokálne spustenie
 
 ```bash
-npm run build
-npx serve dist
+npm run dev
 ```
+
+Lokálny preview sleduje zmeny v `src/`, po uložení automaticky rebuildne stránku a otvorený browser refreshne cez live reload. Adresa je `http://localhost:4173`.
 
 Ak je stránka otvorená bez Cloudflare Functions, zobrazí sa demo komunitné skóre. Pre lokálnu D1 databázu sa dá použiť Cloudflare Wrangler a `schema.sql`.
 

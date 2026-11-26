@@ -4,6 +4,7 @@
   "private": true,
   "description": "Vianočný tier list filmov — komunitné hlasovanie bez registrácie.",
   "scripts": {
-    "build": "node build.mjs"
+    "build": "node build.mjs",
+    "dev": "node build.mjs && node preview.mjs"
   }
 }

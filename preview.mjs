@@ -7,7 +7,7 @@ import { extname, join, normalize } from 'node:path';
 
 const root = join(process.cwd(), 'dist');
 const run = promisify(execFile);
-const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml' };
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png' };
 const liveClients = new Set();
 let rebuildTimer;
 let rebuilding = false;

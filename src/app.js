@@ -1,7 +1,7 @@
 const CATEGORIES = [
   { id: 'animaky', label: 'Animáky', note: 'Rozprávky' },
-  { id: 'americke', label: 'Americké', note: 'Hrané filmy' },
   { id: 'ceskoslovenske', label: 'Československé', note: 'Klasiky' },
+  { id: 'americke', label: 'Americké', note: 'Hrané filmy' },
   { id: 'europske', label: 'Britské & európske', note: 'Romantika a drámy' },
   { id: 'kultove', label: 'Kultové & netradičné', note: 'Vianočný mix' },
 ];

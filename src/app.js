@@ -162,6 +162,7 @@ const els = {
   overviewNav: document.querySelector('#overviewNav'),
   builderNav: document.querySelector('#builderNav'),
   tabs: document.querySelector('#categoryTabs'),
+  board: document.querySelector('#board'),
   heroStats: document.querySelector('#heroStats'),
   preview: document.querySelector('#previewGrid'),
   library: document.querySelector('#filmLibrary'),
@@ -253,7 +254,10 @@ function closeTour() {
   els.tourLayer.classList.remove('is-visible');
   window.removeEventListener('resize', positionTourTarget);
   window.removeEventListener('scroll', positionTourTarget, true);
-  window.setTimeout(() => { els.tourLayer.hidden = true; }, 220);
+  window.setTimeout(() => {
+    els.tourLayer.hidden = true;
+    setViewMode('overview', 'instant');
+  }, 220);
 }
 function renderTourStep() {
   const steps = tourSteps();
@@ -264,7 +268,8 @@ function renderTourStep() {
   els.tourProgress.textContent = `${tourStep + 1} / ${steps.length}`;
   els.tourTitle.textContent = step.title;
   els.tourText.textContent = step.text;
-  els.tourNext.textContent = tourStep === steps.length - 1 ? 'Začať tierovať' : 'Rozumiem';
+  els.tourNext.textContent = tourStep === steps.length - 1 ? 'Hotovo' : 'Rozumiem';
+  els.tourLayer.classList.toggle('is-final-step', tourStep === steps.length - 1);
   tourTarget.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
   window.setTimeout(positionTourTarget, 240);
 }
@@ -450,16 +455,22 @@ function createFilmCard(film) {
   card.draggable = !isTouchLayout();
   card.dataset.filmId = film.id;
   card.title = film.title;
-  card.innerHTML = `<button class="film-card-main" type="button" aria-label="${film.title}, ${film.year}"><img loading="eager" decoding="async" src="${film.image}" alt="${film.title} — náhľad" /><span class="card-meta"><strong>${film.title}</strong><small>${film.year}</small></span></button><button class="film-info-button" type="button" aria-label="O filme ${film.title}">i</button>`;
+  card.innerHTML = `<button class="film-card-main" type="button" aria-label="${film.title}, ${film.year}"><img loading="eager" decoding="async" src="${film.image}" alt="${film.title} — náhľad" /><span class="card-meta"><strong>${film.title}</strong><small>${film.year}</small></span></button><button class="film-info-button" type="button" aria-label="O filme ${film.title}">i</button><button class="film-remove-button" type="button" aria-label="Odobrať ${film.title} z tieru">×</button>`;
   card.addEventListener('dragstart', (event) => { event.dataTransfer.setData('text/plain', film.id); card.classList.add('is-selected'); });
   card.addEventListener('dragend', () => card.classList.remove('is-selected'));
   card.querySelector('.film-card-main').addEventListener('click', () => {
     boardNotice = '';
-    if (rankings()[film.id]) rankings()[film.id] = null;
-    else selectedFilmId = selectedFilmId === film.id ? null : film.id;
+    selectedFilmId = selectedFilmId === film.id ? null : film.id;
     renderBoard();
   });
   card.querySelector('.film-info-button').addEventListener('click', (event) => { event.stopPropagation(); openFilmDetail(film, event.currentTarget); });
+  card.querySelector('.film-remove-button').addEventListener('click', (event) => {
+    event.stopPropagation();
+    rankings()[film.id] = null;
+    if (selectedFilmId === film.id) selectedFilmId = null;
+    boardNotice = '';
+    renderBoard();
+  });
   return card;
 }
 
@@ -499,8 +510,9 @@ function renderBoard() {
   const remaining = categoryFilms.filter((film) => !rankings()[film.id]).length;
   const ranked = categoryFilms.length - remaining;
   const categoryIsVoted = hasVotedCategory(activeCategoryId);
-  els.hint.textContent = boardNotice || (categoryIsVoted ? 'V tejto kategórii už máš hlas uložený' : selectedFilmId ? 'Vyber tier S–D' : `${ranked} z ${categoryFilms.length} zoradených`);
+  els.hint.textContent = boardNotice || (categoryIsVoted ? 'V tejto kategórii už máš hlas uložený' : selectedFilmId ? 'Ťukni kdekoľvek v tiere S–D' : `${ranked} z ${categoryFilms.length} zoradených`);
   els.hint.classList.toggle('is-active', Boolean(selectedFilmId || boardNotice));
+  els.board.classList.toggle('is-placing', Boolean(selectedFilmId));
   els.submit.disabled = remaining > 0 || categoryIsVoted;
   els.submit.textContent = categoryIsVoted ? 'Hlas už odoslaný' : 'Uložiť tierlist';
 }
@@ -543,15 +555,16 @@ function renderPreview() {
   els.preview.querySelectorAll('[data-jump]').forEach((button) => button.addEventListener('click', () => goToBuilder(button.dataset.jump)));
 }
 
-function setViewMode(nextView) {
+function setViewMode(nextView, scrollBehavior = 'smooth') {
   viewMode = nextView;
+  document.body.classList.toggle('is-builder-view', nextView === 'builder');
   els.overviewView.hidden = nextView !== 'overview';
   els.builderView.hidden = nextView !== 'builder';
   els.overviewNav.classList.toggle('is-active', nextView === 'overview');
   els.builderNav.classList.toggle('is-active', nextView === 'builder');
   els.overviewNav.setAttribute('aria-current', nextView === 'overview' ? 'page' : 'false');
   els.builderNav.setAttribute('aria-current', nextView === 'builder' ? 'page' : 'false');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: scrollBehavior });
 }
 
 function goToBuilder(categoryId = activeCategoryId) {
@@ -592,7 +605,14 @@ document.querySelectorAll('.tier-dropzone').forEach((zone) => {
   zone.addEventListener('dragover', (event) => { event.preventDefault(); zone.classList.add('is-over'); });
   zone.addEventListener('dragleave', () => zone.classList.remove('is-over'));
   zone.addEventListener('drop', (event) => { event.preventDefault(); zone.classList.remove('is-over'); moveFilm(event.dataTransfer.getData('text/plain'), zone.dataset.tier); });
-  zone.addEventListener('click', () => { if (selectedFilmId) moveFilm(selectedFilmId, zone.dataset.tier); });
+});
+document.querySelectorAll('.tier-row').forEach((row) => {
+  row.addEventListener('click', (event) => {
+    if (!selectedFilmId || event.target.closest('.film-info-button, .film-remove-button')) return;
+    event.preventDefault();
+    event.stopPropagation();
+    moveFilm(selectedFilmId, row.dataset.tier);
+  }, true);
 });
 
 els.overviewNav.addEventListener('click', () => setViewMode('overview'));

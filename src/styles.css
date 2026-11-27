@@ -53,6 +53,7 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
 .intro-note { margin: 0 0 5px; color: var(--muted); font-size: 14px; line-height: 1.55; text-align: right; }
 
 .hero-stats { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 12px; margin: 0 0 24px; }
+.is-builder-view .intro, .is-builder-view .hero-stats { display: none; }
 .hero-stat { min-height: 128px; padding: 18px 18px 20px; overflow: visible; border: 1px solid rgba(61,102,85,.7); border-radius: 12px; background: linear-gradient(135deg, rgba(23,56,42,.97), rgba(13,31,22,.88)); box-shadow: 0 12px 28px rgba(0,0,0,.16); animation: rise-in .5s both; }
 .hero-stat:nth-child(2) { animation-delay: .05s; }
 .hero-stat:nth-child(3) { animation-delay: .1s; }
@@ -165,6 +166,8 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
 .tier-d .tier-label { background: #8c7771; }
 .tier-dropzone { display: flex; align-items: center; align-content: center; flex-wrap: wrap; gap: 10px; min-height: 90px; padding: 11px 14px; background: rgba(10,23,19,.45); transition: background .2s, box-shadow .2s; }
 .tier-dropzone.is-over { background: #233d32; box-shadow: inset 0 0 0 3px rgba(208,91,103,.25); }
+.board.is-placing .tier-row { cursor: pointer; }
+.board.is-placing .tier-row:hover .tier-dropzone { background: #233d32; }
 .tier-dropzone:empty::after { color: #71847a; font-size: 11px; line-height: 1.25; }
 .tier-dropzone[data-tier="S"]:empty::after { content: "Bez toho sa Vianoce nerátajú"; }
 .tier-dropzone[data-tier="A"]:empty::after { content: "Vianočná istota"; }
@@ -181,6 +184,9 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
 .film-card small { display: block; margin-top: 5px; color: var(--muted); font-size: 9px; }
 .film-info-button { position: absolute; top: 5px; right: 5px; display: grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 1px solid rgba(247,241,231,.66); border-radius: 50%; background: rgba(8,17,14,.72); color: #fff; font-family: Georgia, serif; font-size: 12px; font-weight: 700; line-height: 1; opacity: .88; transition: background .2s ease, color .2s ease, transform .2s ease; }
 .film-info-button:hover, .film-info-button:focus-visible { background: var(--gold); color: #142821; transform: scale(1.08); }
+.film-remove-button { display: none; }
+.tier-dropzone .film-remove-button { position: absolute; z-index: 2; top: 5px; left: 5px; display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 1px solid rgba(247,241,231,.7); border-radius: 50%; background: rgba(8,17,14,.84); color: #fff; font-size: 18px; line-height: 1; }
+.tier-dropzone .film-remove-button:hover, .tier-dropzone .film-remove-button:focus-visible { background: var(--red); border-color: var(--red); }
 .film-library .film-card { width: 106px; }
 .tier-dropzone .film-card { width: 88px; }
 .tier-dropzone .film-card img { height: 102px; }
@@ -221,6 +227,7 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
 .tour-layer.is-visible { opacity: 1; }
 .tour-hole { position: fixed; border: 1px solid rgba(227,190,105,.88); border-radius: 12px; box-shadow: 0 0 0 9999px rgba(3,10,7,.7), 0 0 0 5px rgba(227,190,105,.16); transition: top .24s ease, left .24s ease, width .24s ease, height .24s ease; }
 .tour-card { position: fixed; right: 24px; bottom: 24px; width: min(390px, calc(100% - 48px)); padding: 19px 20px 17px; border: 1px solid rgba(227,190,105,.58); border-radius: 13px; background: linear-gradient(145deg, rgba(23,56,42,.99), rgba(10,30,21,.99)); box-shadow: 0 20px 60px rgba(0,0,0,.48); pointer-events: auto; }
+.tour-layer.is-final-step .tour-card { top: max(24px, env(safe-area-inset-top)); bottom: auto; }
 .tour-progress { display: block; margin-bottom: 8px; color: var(--gold); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 .tour-card strong { display: block; color: var(--ink); font-family: "Playfair Display", Georgia, serif; font-size: 23px; line-height: 1.05; }
 .tour-card p { margin: 9px 0 16px; color: #d6e3d8; font-size: 13px; line-height: 1.45; }
@@ -339,6 +346,7 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
   .section-topline { align-items: start; }
   .builder-section { padding-bottom: 72px; }
   .tour-card { right: 14px; bottom: 14px; width: calc(100% - 28px); padding: 17px 17px 15px; }
+  .tour-layer.is-final-step .tour-card { top: max(14px, env(safe-area-inset-top)); bottom: auto; }
   .tour-card strong { font-size: 21px; }
   .trivia-toast { right: 14px; bottom: 14px; width: calc(100% - 28px); padding: 16px 17px 15px; }
   .trivia-toast strong { font-size: 19px; }
@@ -349,6 +357,7 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
   .film-card img { height: auto; aspect-ratio: 2 / 3; }
   .tier-dropzone .film-card { width: 100%; }
   .tier-dropzone .film-card img { height: auto; aspect-ratio: 2 / 3; }
+  .tier-dropzone .film-remove-button { top: 3px; left: 3px; width: 27px; height: 27px; }
   .film-library { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px; }
   .film-library .film-card { width: 100%; }
   .library-bar { margin-top: 0; }

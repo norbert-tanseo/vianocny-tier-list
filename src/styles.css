@@ -117,6 +117,7 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
 .top-three--more .top-three-title { padding: 19px 7px 7px; }
 .top-three--more .top-three-title strong { font-size: clamp(10px, .9vw, 13px); line-height: 1.05; }
 .top-three--more .top-three-title small { margin-top: 3px; font-size: 9px; }
+.top-three--more .place { font-size: clamp(29px, 3vw, 38px); }
 .top-three--more .top-three-score { font-size: 10px; }
 .top-three-row .place { position: static; z-index: 2; align-self: end; }
 .top-three-row .top-three-score { position: absolute; z-index: 2; top: 9px; right: 9px; color: #fff; font-size: 11px; text-shadow: 0 1px 7px rgba(0,0,0,.8); }
@@ -306,6 +307,7 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
   .top-three-title strong { overflow: visible; font-size: 14px; line-height: 1.06; white-space: normal; }
   .top-three-title small { margin-top: 4px; font-size: 9px; }
   .top-three-row .place { font-size: 38px; }
+  .top-three--more .place { font-size: 29px; }
   .top-three-row .top-three-score { position: absolute; z-index: 2; top: 9px; right: 9px; color: #fff; text-shadow: 0 1px 7px rgba(0,0,0,.8); }
   .preview-section, .builder-section { padding: 42px 0; }
   .preview-grid { grid-template-columns: 1fr; gap: 38px; }

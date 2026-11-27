@@ -1,5 +1,5 @@
 const VALID_TIERS = new Set(['S', 'A', 'B', 'C', 'D']);
-const FILM_CATEGORY = {
+export const FILM_CATEGORY = {
   klaus: 'animaky', grinch: 'animaky', 'grinch-animated': 'animaky', 'polar-express': 'animaky', 'christmas-carol': 'animaky', 'legendary-guardians': 'animaky',
   'nightmare-before-christmas': 'animaky', 'arthur-christmas': 'animaky', 'mickey-christmas-carol': 'animaky', snowman: 'animaky', 'robin-robin': 'animaky', 'the-star': 'animaky',
   'home-alone': 'americke', 'home-alone-2': 'americke', 'home-alone-3': 'americke', 'home-alone-4': 'americke', 'home-alone-5': 'americke', 'home-sweet-home-alone': 'americke', elf: 'americke', 'christmas-vacation': 'americke', 'santa-clause': 'americke',
@@ -15,7 +15,7 @@ function json(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 }
 
-async function readResults(db) {
+export async function readResults(db) {
   const rows = await db.prepare('SELECT film_id, tier, COUNT(*) AS votes FROM votes GROUP BY film_id, tier').all();
   const submissionRows = await db.prepare('SELECT submission_id, film_id FROM votes').all();
   const results = {};
@@ -57,3 +57,4 @@ export async function onRequestPost({ request, env }) {
   await env.DB.batch(statements);
   return json({ ok: true, ...(await readResults(env.DB)) }, 201);
 }
+

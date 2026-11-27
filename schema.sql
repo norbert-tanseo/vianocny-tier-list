@@ -9,3 +9,31 @@ CREATE TABLE IF NOT EXISTS votes (
 
 CREATE INDEX IF NOT EXISTS idx_votes_film_tier ON votes (film_id, tier);
 CREATE INDEX IF NOT EXISTS idx_votes_submission ON votes (submission_id);
+
+CREATE TABLE IF NOT EXISTS suggestions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL DEFAULT '',
+  category_id TEXT NOT NULL,
+  new_category TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'reviewed')),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_suggestions_created ON suggestions (created_at DESC);
+
+CREATE TABLE IF NOT EXISTS suggestion_limits (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  rate_key TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_suggestion_limits_key_time ON suggestion_limits (rate_key, created_at);
+
+CREATE TABLE IF NOT EXISTS admin_login_attempts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  rate_key TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_admin_login_attempts_key_time ON admin_login_attempts (rate_key, created_at);
+

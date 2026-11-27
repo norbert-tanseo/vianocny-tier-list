@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="sk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#10271c" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Správa · Vianočný tier list</title>
+    <link rel="icon" href="/favicon-camera.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/admin.css" />
+  </head>
+  <body>
+    <div class="admin-shell">
+      <header class="admin-header">
+        <div class="admin-brand"><img src="/favicon-camera.png" alt="" /><span>Vianočný <strong>tier list</strong></span></div>
+        <button id="logoutButton" class="text-button" type="button" hidden>Odhlásiť sa</button>
+      </header>
+
+      <main>
+        <section id="loginView" class="login-view" hidden>
+          <div class="login-card">
+            <span class="eyebrow">Správa stránky</span>
+            <h1>Vitaj späť.</h1>
+            <p>Prihlás sa heslom, aby si videl výsledky a návrhy.</p>
+            <form id="loginForm">
+              <label for="passwordInput">Heslo</label>
+              <input id="passwordInput" type="password" required autocomplete="current-password" />
+              <button class="primary-button" type="submit">Prihlásiť sa</button>
+              <span id="loginStatus" class="form-status" role="status"></span>
+            </form>
+          </div>
+        </section>
+
+        <section id="dashboardView" hidden>
+          <div class="dashboard-heading"><div><span class="eyebrow">Správa stránky</span><h1>Prehľad</h1></div><button class="text-button" id="refreshButton" type="button">Obnoviť údaje ↗</button></div>
+          <div id="statCards" class="stat-cards" aria-label="Štatistiky"></div>
+          <div class="dashboard-columns">
+            <section class="admin-section"><div class="section-heading"><h2>Kategórie</h2><span>Uložené tierlisty</span></div><div id="categoryStats" class="category-stats"></div></section>
+            <section class="admin-section"><div class="section-heading"><h2>Posledné hlasy</h2></div><div id="recentVotes" class="recent-votes"></div></section>
+          </div>
+          <section class="admin-section suggestion-section"><div class="section-heading"><h2>Návrhy od ľudí</h2><span id="suggestionHeading"></span></div><div id="suggestionList" class="suggestion-list"></div></section>
+        </section>
+        <p id="pageStatus" class="page-status" role="status"></p>
+      </main>
+    </div>
+    <script src="/admin.js" type="module"></script>
+  </body>
+</html>
+

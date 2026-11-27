@@ -7,7 +7,7 @@ import { extname, join, normalize } from 'node:path';
 
 const root = join(process.cwd(), 'dist');
 const run = promisify(execFile);
-const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png' };
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg' };
 const liveClients = new Set();
 let rebuildTimer;
 let rebuilding = false;
@@ -46,7 +46,7 @@ const server = createServer(async (req, res) => {
   }
   const requestedPath = requestPath;
   const safePath = normalize(requestedPath).replace(/^([.][.][/\\])+/, '');
-  const relativePath = safePath === '/' || safePath === '\\' ? 'index.html' : safePath.replace(/^[/\\]/, '');
+  const relativePath = safePath === '/' || safePath === '\\' ? 'index.html' : safePath.replace(/^[/\\]/, '') === 'admin' ? 'admin.html' : safePath.replace(/^[/\\]/, '');
   const file = join(root, relativePath);
   try {
     const body = await readFile(file);
@@ -60,3 +60,4 @@ const server = createServer(async (req, res) => {
 
 watch(join(process.cwd(), 'src'), { recursive: true }, (_event, filename) => scheduleRebuild(filename));
 server.listen(4173, '127.0.0.1', () => console.log('Preview at http://127.0.0.1:4173 (watching src/)'));
+

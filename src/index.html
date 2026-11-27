@@ -60,13 +60,38 @@
         <section class="preview-section" id="prehlad">
           <div class="section-topline">
             <div>
-              <span class="section-label">Prehľad</span>
-              <h2>Vianočné rebríčky</h2>
+              <h2>Prehľad</h2>
             </div>
             <span class="vote-total" id="voteTotal">0 hodnotení</span>
           </div>
           <div class="preview-grid" id="previewGrid"></div>
         </section>
+        <details class="suggestion-panel">
+          <summary>Chýba ti film alebo kategória? <span>Navrhni ju <span aria-hidden="true">↗</span></span></summary>
+          <form id="suggestionForm" class="suggestion-form">
+            <div class="suggestion-fields">
+              <label>Kategória
+                <select id="suggestionCategory" name="category" required>
+                  <option value="" selected disabled>Vyber kategóriu</option>
+                  <option value="animaky">Animáky</option>
+                  <option value="ceskoslovenske">Československé</option>
+                  <option value="americke">Americké</option>
+                  <option value="europske">Britské &amp; európske</option>
+                  <option value="kultove">Kultové &amp; netradičné</option>
+                  <option value="nova">Nová kategória</option>
+                </select>
+              </label>
+              <label id="suggestionNewCategoryField" hidden>Názov novej kategórie
+                <input id="suggestionNewCategory" name="newCategory" maxlength="60" placeholder="Napr. zimné rozprávky" />
+              </label>
+              <label id="suggestionTitleField"><span id="suggestionTitleLabel">Názov filmu alebo rozprávky</span>
+                <input id="suggestionTitle" name="title" maxlength="120" placeholder="Čo nám chýba?" required />
+              </label>
+            </div>
+            <input class="suggestion-trap" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <div class="suggestion-bottom"><p id="suggestionStatus" role="status" aria-live="polite"></p><button class="primary-button" type="submit">Odoslať návrh</button></div>
+          </form>
+        </details>
       </section>
 
       <section class="view-section" id="builderView" hidden>
@@ -173,6 +198,7 @@
     </dialog>
 
     <script src="./app.js" type="module"></script>
+    <script src="./suggestions.js" type="module"></script>
   </body>
 </html>
 

@@ -434,7 +434,7 @@ function initSnowfall() {
 }
 
 function renderTabs() {
-  els.tabs.innerHTML = CATEGORIES.map((category) => `<button class="category-tab ${category.id === activeCategoryId ? 'is-active' : ''} ${hasVotedCategory(category.id) ? 'is-voted' : ''}" type="button" data-category="${category.id}" aria-label="${category.label}${hasVotedCategory(category.id) ? ', už odhlasované' : ''}"><strong><span class="category-name category-name--${category.id}">${category.label}</span><span class="category-check" aria-hidden="true">${hasVotedCategory(category.id) ? '✓' : ''}</span></strong><small>${categoryCountLabel(category.id)}</small></button>`).join('');
+  els.tabs.innerHTML = CATEGORIES.map((category) => `<button class="category-tab category-tab--${category.id} ${category.id === activeCategoryId ? 'is-active' : ''} ${hasVotedCategory(category.id) ? 'is-voted' : ''}" type="button" data-category="${category.id}" aria-label="${category.label}${hasVotedCategory(category.id) ? ', už odhlasované' : ''}"><strong><span class="category-name category-name--${category.id}">${category.label}</span><span class="category-check" aria-hidden="true">${hasVotedCategory(category.id) ? '✓' : ''}</span></strong><small>${categoryCountLabel(category.id)}</small></button>`).join('');
   els.tabs.querySelectorAll('.category-tab').forEach((tab) => tab.addEventListener('click', () => switchCategory(tab.dataset.category)));
 }
 

@@ -172,6 +172,15 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
 .save-result-action { border: 0; background: transparent; color: #397457; font-size: 11px; font-weight: 800; white-space: nowrap; }
 .save-result-action:hover { color: var(--red); }
 
+.trivia-toast { position: fixed; z-index: 18; right: 24px; bottom: 24px; width: min(360px, calc(100% - 48px)); padding: 18px 20px 17px; border: 1px solid rgba(215,180,103,.52); border-radius: 13px; background: linear-gradient(145deg, rgba(20,40,33,.98), rgba(10,23,19,.98)); box-shadow: 0 18px 55px rgba(0,0,0,.42); opacity: 0; transform: translateY(12px) scale(.98); pointer-events: none; transition: opacity .24s ease, transform .24s ease; }
+.trivia-toast.is-visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.trivia-close { position: absolute; top: 8px; right: 12px; border: 0; background: none; color: var(--muted); font-size: 22px; line-height: 1; }
+.trivia-kicker { display: block; margin-bottom: 8px; color: var(--gold); font-size: 10px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+.trivia-toast strong { display: block; padding-right: 20px; color: var(--ink); font-family: "Playfair Display", Georgia, serif; font-size: 20px; line-height: 1.05; }
+.trivia-toast p { margin: 9px 0 11px; color: #d6e0d7; font-size: 13px; line-height: 1.45; }
+.trivia-toast a { color: #b9d5bd; font-size: 11px; font-weight: 800; }
+.trivia-toast a:hover, .trivia-close:hover { color: var(--red); }
+
 .name-dialog { position: fixed; top: 50%; left: 50%; width: min(390px, calc(100% - 30px)); max-height: calc(100dvh - 28px); margin: 0; overflow: auto; border: 1px solid var(--line); border-radius: 12px; padding: 0; color: var(--ink); background: var(--cream); box-shadow: 0 24px 90px rgba(0,0,0,.65); transform: translate(-50%, -50%); }
 .name-dialog::backdrop { background: rgba(3,10,7,.72); backdrop-filter: blur(4px); }
 .name-dialog form { position: relative; padding: 34px; }
@@ -263,6 +272,8 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
   .preview-card { padding: 15px; }
   .section-topline { align-items: start; }
   .builder-section { padding-bottom: 72px; }
+  .trivia-toast { right: 14px; bottom: 14px; width: calc(100% - 28px); padding: 16px 17px 15px; }
+  .trivia-toast strong { font-size: 19px; }
   .tier-row { grid-template-columns: 52px 1fr; min-height: 86px; }
   .tier-dropzone { min-height: 86px; padding: 10px 9px; gap: 7px; }
   .tier-label b { font-size: 30px; }

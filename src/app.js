@@ -1,3 +1,5 @@
+import { TRIVIA_FACTS } from './trivia.js';
+
 const CATEGORIES = [
   { id: 'animaky', label: 'Animáky', icon: '🎨' },
   { id: 'ceskoslovenske', label: 'Československé', icon: '🇨🇿🇸🇰' },
@@ -133,6 +135,7 @@ const FILM_DETAILS = {
 const WEIGHTS = { S: 5, A: 4, B: 3, C: 2, D: 1 };
 const NAME_STORAGE_KEY = 'vianocny-tier-list.name';
 const VOTED_STORAGE_KEY = 'vianocny-tier-list.voted-categories';
+const TRIVIA_INITIAL_DELAY = 150000;
 const filmById = Object.fromEntries(FILMS.map((film) => [film.id, film]));
 const rankingsByCategory = Object.fromEntries(CATEGORIES.map((category) => [category.id, {}]));
 const filmCardCache = new Map();
@@ -146,6 +149,9 @@ let boardNotice = '';
 let viewMode = 'overview';
 let detailScrollPosition = 0;
 let detailTrigger = null;
+let triviaQueue = [];
+let triviaTimer = null;
+let triviaDismissTimer = null;
 
 const els = {
   overviewView: document.querySelector('#overviewView'),
@@ -170,6 +176,11 @@ const els = {
   filmDetail: document.querySelector('#filmDetail'),
   voteTotal: document.querySelector('#voteTotal'),
   submit: document.querySelector('#submitButton'),
+  triviaToast: document.querySelector('#triviaToast'),
+  triviaFilm: document.querySelector('#triviaFilm'),
+  triviaText: document.querySelector('#triviaText'),
+  triviaSource: document.querySelector('#triviaSource'),
+  triviaClose: document.querySelector('#triviaClose'),
 };
 
 function filmsInCategory(categoryId) { return FILMS.filter((film) => film.category === categoryId); }
@@ -177,6 +188,34 @@ function rankings() { return rankingsByCategory[activeCategoryId]; }
 function setDialogLock(locked) {
   document.documentElement.classList.toggle('dialog-open', locked);
   document.body.classList.toggle('dialog-open', locked);
+}
+function shuffle(items) { return [...items].sort(() => Math.random() - 0.5); }
+function scheduleTrivia(delay = 180000 + Math.random() * 120000) {
+  window.clearTimeout(triviaTimer);
+  triviaTimer = window.setTimeout(showTriviaFact, delay);
+}
+function dismissTrivia(scheduleNext = true) {
+  if (!els.triviaToast || els.triviaToast.hidden) return;
+  window.clearTimeout(triviaDismissTimer);
+  els.triviaToast.classList.remove('is-visible');
+  window.setTimeout(() => { els.triviaToast.hidden = true; }, 240);
+  if (scheduleNext) scheduleTrivia();
+}
+function showTriviaFact() {
+  if (!els.triviaToast || document.hidden || document.documentElement.classList.contains('dialog-open')) {
+    scheduleTrivia(60000);
+    return;
+  }
+  if (!triviaQueue.length) triviaQueue = shuffle(TRIVIA_FACTS);
+  const fact = triviaQueue.pop();
+  const film = filmById[fact.filmId];
+  if (!film) { scheduleTrivia(60000); return; }
+  els.triviaFilm.textContent = film.title;
+  els.triviaText.textContent = fact.fact;
+  els.triviaSource.href = fact.source;
+  els.triviaToast.hidden = false;
+  requestAnimationFrame(() => els.triviaToast.classList.add('is-visible'));
+  triviaDismissTimer = window.setTimeout(() => dismissTrivia(), 22000);
 }
 function categoryLabel(categoryId) { return CATEGORIES.find((category) => category.id === categoryId)?.label || categoryId; }
 function categoryIcon(categoryId) { return CATEGORIES.find((category) => category.id === categoryId)?.icon || '✦'; }
@@ -553,9 +592,11 @@ els.filmDialog.addEventListener('close', () => {
   if (detailTrigger) detailTrigger.focus({ preventScroll: true });
   detailTrigger = null;
 });
+els.triviaClose.addEventListener('click', () => dismissTrivia());
 renderTabs();
 renderBoard();
 renderPreview();
 setViewMode('overview');
 initSnowfall();
 loadResults();
+scheduleTrivia(TRIVIA_INITIAL_DELAY);

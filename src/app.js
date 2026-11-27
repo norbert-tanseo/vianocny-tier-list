@@ -174,6 +174,10 @@ const els = {
 
 function filmsInCategory(categoryId) { return FILMS.filter((film) => film.category === categoryId); }
 function rankings() { return rankingsByCategory[activeCategoryId]; }
+function setDialogLock(locked) {
+  document.documentElement.classList.toggle('dialog-open', locked);
+  document.body.classList.toggle('dialog-open', locked);
+}
 function categoryLabel(categoryId) { return CATEGORIES.find((category) => category.id === categoryId)?.label || categoryId; }
 function categoryCountLabel(categoryId) {
   const count = categoryCounts[categoryId] || 0;
@@ -230,6 +234,7 @@ function openFilmDetail(film, trigger = null) {
   </div>`;
   const image = els.filmDetail.querySelector('img');
   image.addEventListener('error', () => { image.onerror = null; image.src = posterPlaceholder(film); });
+  setDialogLock(true);
   els.filmDialog.showModal();
   requestAnimationFrame(() => window.scrollTo(0, detailScrollPosition));
 }
@@ -508,6 +513,7 @@ document.querySelector('#submitButton').addEventListener('click', () => {
   if (hasVotedCategory(activeCategoryId)) return;
   els.dialogStatus.textContent = '';
   try { els.name.value = localStorage.getItem(NAME_STORAGE_KEY) || ''; } catch { els.name.value = ''; }
+  setDialogLock(true);
   els.dialog.showModal();
   window.setTimeout(() => els.name.focus(), 50);
 });
@@ -560,7 +566,9 @@ els.form.addEventListener('submit', async (event) => {
 });
 
 document.querySelector('.dialog-close').addEventListener('click', () => els.dialog.close());
+els.dialog.addEventListener('close', () => setDialogLock(false));
 els.filmDialog.addEventListener('close', () => {
+  setDialogLock(false);
   window.scrollTo(0, detailScrollPosition);
   if (detailTrigger) detailTrigger.focus({ preventScroll: true });
   detailTrigger = null;

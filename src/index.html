@@ -124,6 +124,19 @@
       </section>
     </main>
 
+    <div class="tour-layer" id="tourLayer" hidden aria-live="polite">
+      <div class="tour-hole" id="tourHole" aria-hidden="true"></div>
+      <section class="tour-card" id="tourCard">
+        <span class="tour-progress" id="tourProgress"></span>
+        <strong id="tourTitle"></strong>
+        <p id="tourText"></p>
+        <div class="tour-actions">
+          <button class="tour-skip" id="tourSkip" type="button">Preskočiť</button>
+          <button class="primary-button tour-next" id="tourNext" type="button">Rozumiem</button>
+        </div>
+      </section>
+    </div>
+
     <aside class="trivia-toast" id="triviaToast" hidden aria-live="polite">
       <button class="trivia-close" id="triviaClose" type="button" aria-label="Zavrieť zaujímavosť">×</button>
       <span class="trivia-kicker">Vedel si, že?</span>

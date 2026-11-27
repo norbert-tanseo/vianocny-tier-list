@@ -135,6 +135,7 @@ const FILM_DETAILS = {
 const WEIGHTS = { S: 5, A: 4, B: 3, C: 2, D: 1 };
 const NAME_STORAGE_KEY = 'vianocny-tier-list.name';
 const VOTED_STORAGE_KEY = 'vianocny-tier-list.voted-categories';
+const TOUR_STORAGE_KEY = 'vianocny-tier-list.tour-seen';
 const TRIVIA_INITIAL_DELAY = 150000;
 const filmById = Object.fromEntries(FILMS.map((film) => [film.id, film]));
 const rankingsByCategory = Object.fromEntries(CATEGORIES.map((category) => [category.id, {}]));
@@ -152,6 +153,8 @@ let detailTrigger = null;
 let triviaQueue = [];
 let triviaTimer = null;
 let triviaDismissTimer = null;
+let tourStep = 0;
+let tourTarget = null;
 
 const els = {
   overviewView: document.querySelector('#overviewView'),
@@ -181,6 +184,13 @@ const els = {
   triviaText: document.querySelector('#triviaText'),
   triviaSource: document.querySelector('#triviaSource'),
   triviaClose: document.querySelector('#triviaClose'),
+  tourLayer: document.querySelector('#tourLayer'),
+  tourHole: document.querySelector('#tourHole'),
+  tourProgress: document.querySelector('#tourProgress'),
+  tourTitle: document.querySelector('#tourTitle'),
+  tourText: document.querySelector('#tourText'),
+  tourNext: document.querySelector('#tourNext'),
+  tourSkip: document.querySelector('#tourSkip'),
 };
 
 function filmsInCategory(categoryId) { return FILMS.filter((film) => film.category === categoryId); }
@@ -216,6 +226,61 @@ function showTriviaFact() {
   els.triviaToast.hidden = false;
   requestAnimationFrame(() => els.triviaToast.classList.add('is-visible'));
   triviaDismissTimer = window.setTimeout(() => dismissTrivia(), 22000);
+}
+function tourSteps() {
+  const mobile = isTouchLayout();
+  return [
+    { selector: '.category-tabs', title: 'Vyber kategóriu', text: 'Začni kategóriou, ktorú chceš zoradiť. Každá má vlastný zoznam titulov.' },
+    { selector: '.library-panel', title: 'Vyber titul', text: mobile ? 'Na mobile ťukni na plagát, ktorý chceš zaradiť.' : 'Na počítači chyť plagát a potiahni ho do vybraného tieru.' },
+    { selector: '.tier-panel', title: 'Priraď mu tier', text: mobile ? 'Potom ťukni na S až D. Titul sa presunie a môžeš pokračovať ďalším.' : 'Potiahni plagát do S až D. S je povinná vianočná jazda, D je titul, ktorý nechceš znova vidieť.' },
+    { selector: '.submit-row', title: 'Ulož svoj výber', text: 'Keď má každý titul svoje miesto, klikni na uloženie. Stačí už len tvoje meno alebo prezývka.' },
+  ];
+}
+function markTourSeen() {
+  try { localStorage.setItem(TOUR_STORAGE_KEY, '1'); } catch { /* Storage may be unavailable. */ }
+}
+function positionTourTarget() {
+  if (!tourTarget || els.tourLayer.hidden) return;
+  const rect = tourTarget.getBoundingClientRect();
+  const pad = 7;
+  els.tourHole.style.left = `${Math.max(8, rect.left - pad)}px`;
+  els.tourHole.style.top = `${Math.max(8, rect.top - pad)}px`;
+  els.tourHole.style.width = `${Math.min(window.innerWidth - 16, rect.width + pad * 2)}px`;
+  els.tourHole.style.height = `${Math.min(window.innerHeight - 16, rect.height + pad * 2)}px`;
+}
+function closeTour() {
+  markTourSeen();
+  els.tourLayer.classList.remove('is-visible');
+  window.removeEventListener('resize', positionTourTarget);
+  window.removeEventListener('scroll', positionTourTarget, true);
+  window.setTimeout(() => { els.tourLayer.hidden = true; }, 220);
+}
+function renderTourStep() {
+  const steps = tourSteps();
+  const step = steps[tourStep];
+  if (!step) { closeTour(); return; }
+  tourTarget = document.querySelector(step.selector);
+  if (!tourTarget) { closeTour(); return; }
+  els.tourProgress.textContent = `${tourStep + 1} / ${steps.length}`;
+  els.tourTitle.textContent = step.title;
+  els.tourText.textContent = step.text;
+  els.tourNext.textContent = tourStep === steps.length - 1 ? 'Začať tierovať' : 'Rozumiem';
+  tourTarget.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+  window.setTimeout(positionTourTarget, 240);
+}
+function openTour() {
+  let hasSeen = false;
+  try { hasSeen = localStorage.getItem(TOUR_STORAGE_KEY) === '1'; } catch { /* Storage may be unavailable. */ }
+  if (hasSeen) return;
+  goToBuilder(CATEGORIES[0].id);
+  tourStep = 0;
+  els.tourLayer.hidden = false;
+  window.addEventListener('resize', positionTourTarget);
+  window.addEventListener('scroll', positionTourTarget, true);
+  requestAnimationFrame(() => {
+    els.tourLayer.classList.add('is-visible');
+    renderTourStep();
+  });
 }
 function categoryLabel(categoryId) { return CATEGORIES.find((category) => category.id === categoryId)?.label || categoryId; }
 function categoryIcon(categoryId) { return CATEGORIES.find((category) => category.id === categoryId)?.icon || '✦'; }
@@ -593,6 +658,11 @@ els.filmDialog.addEventListener('close', () => {
   detailTrigger = null;
 });
 els.triviaClose.addEventListener('click', () => dismissTrivia());
+els.tourNext.addEventListener('click', () => {
+  tourStep += 1;
+  renderTourStep();
+});
+els.tourSkip.addEventListener('click', closeTour);
 renderTabs();
 renderBoard();
 renderPreview();
@@ -600,3 +670,4 @@ setViewMode('overview');
 initSnowfall();
 loadResults();
 scheduleTrivia(TRIVIA_INITIAL_DELAY);
+window.setTimeout(openTour, 520);

@@ -38,8 +38,17 @@ a { color: inherit; text-decoration: none; }
 
 .intro { display: flex; align-items: end; justify-content: space-between; gap: 30px; padding: 36px 0 28px; }
 .eyebrow, .section-label { display: block; margin: 0 0 10px; color: var(--red); font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-.category-icon { display: inline-block; margin-right: 7px; color: var(--gold); font-size: 1.05em; line-height: 1; letter-spacing: 0; vertical-align: -1px; }
-.category-heading-icon { display: inline-block; margin-right: 10px; color: var(--gold); font-family: Georgia, serif; font-size: .7em; letter-spacing: 0; vertical-align: .08em; }
+.category-icon-svg { display: inline-block; flex: 0 0 22px; width: 22px; height: 22px; margin-right: 8px; overflow: visible; color: var(--gold); vertical-align: -5px; }
+.category-icon-svg path, .category-icon-svg circle { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.category-icon-svg .accent { fill: var(--red); stroke: var(--red); }
+.category-icon-svg--animaky { color: #e3be69; }
+.category-icon-svg--ceskoslovenske { color: #4d9b8b; }
+.category-icon-svg--ceskoslovenske .accent { fill: #da5d6b; stroke: #da5d6b; }
+.category-icon-svg--americke { color: #5da2d0; }
+.category-icon-svg--americke .accent { fill: #da5d6b; stroke: #da5d6b; }
+.category-icon-svg--europske { color: #8fc78d; }
+.category-icon-svg--kultove { color: #e3be69; }
+.category-heading-icon { width: 26px; height: 26px; margin-right: 10px; vertical-align: -6px; }
 h1, h2 { margin: 0; font-family: "Playfair Display", Georgia, serif; letter-spacing: -.045em; line-height: .98; }
 h1 { max-width: 760px; font-size: clamp(38px, 5.5vw, 60px); }
 h1 em { color: var(--red); font-style: normal; }
@@ -61,7 +70,7 @@ h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
 .category-tab { padding: 15px 16px 13px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--muted); text-align: left; transition: color .2s ease, border-color .2s ease, transform .2s ease; }
 .category-tab strong { display: flex; align-items: center; justify-content: space-between; color: inherit; font-size: 14px; }
 .category-name { display: inline-flex; align-items: center; min-width: 0; }
-.category-name .category-icon { flex: 0 0 auto; margin-right: 8px; }
+.category-name .category-icon-svg { flex: 0 0 22px; }
 .category-tab small { display: block; margin-top: 3px; color: inherit; font-size: 11px; }
 .category-tab:hover { color: var(--red); }
 .category-tab.is-active { border-bottom-color: var(--red); color: var(--ink); }

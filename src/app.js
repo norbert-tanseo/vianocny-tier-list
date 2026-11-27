@@ -1,12 +1,20 @@
 import { TRIVIA_FACTS } from './trivia.js';
 
 const CATEGORIES = [
-  { id: 'animaky', label: 'Animáky', icon: '🎨' },
-  { id: 'ceskoslovenske', label: 'Československé', icon: '🇨🇿🇸🇰' },
-  { id: 'americke', label: 'Americké', icon: '🇺🇸' },
-  { id: 'europske', label: 'Britské & európske', icon: '🇬🇧🇪🇺' },
-  { id: 'kultove', label: 'Kultové & netradičné', icon: '🍿' },
+  { id: 'animaky', label: 'Animáky', icon: 'clapper' },
+  { id: 'ceskoslovenske', label: 'Československé', icon: 'pennants' },
+  { id: 'americke', label: 'Americké', icon: 'star' },
+  { id: 'europske', label: 'Britské & európske', icon: 'globe' },
+  { id: 'kultove', label: 'Kultové & netradičné', icon: 'reel' },
 ];
+
+const CATEGORY_ICON_SVGS = {
+  clapper: '<path d="M5 8h14v11H5z"/><path d="m5 8 2-4 3 4 3-4 3 4 3-4 2 4"/><circle class="accent" cx="12" cy="13.5" r="2.4"/>',
+  pennants: '<path d="M5 4v17M15 4v17"/><path class="accent" d="M6 5h7l-3.5 3L13 11H6zM16 5h6l-3 3 3 3h-6z"/>',
+  star: '<circle cx="12" cy="12" r="8.5"/><path class="accent" d="m12 6 1.8 3.8 4.2.6-3 3 0.7 4.2-3.7-2-3.7 2 .7-4.2-3-3 4.2-.6L12 6Z"/>',
+  globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.7 12h16.6M12 3.5c2.3 2.4 3.4 5.2 3.4 8.5s-1.1 6.1-3.4 8.5c-2.3-2.4-3.4-5.2-3.4-8.5S9.7 5.9 12 3.5Z"/><circle class="accent" cx="12" cy="5.5" r="1.1"/>',
+  reel: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2"/><circle class="accent" cx="12" cy="7" r="1.5"/><circle class="accent" cx="16.3" cy="14.5" r="1.5"/><circle class="accent" cx="7.7" cy="14.5" r="1.5"/>',
+};
 
 const FILMS = [
   { id: 'klaus', category: 'animaky', title: 'Klaus', year: 2019, image: 'https://upload.wikimedia.org/wikipedia/en/2/26/Klaus_poster.jpeg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled' },
@@ -283,7 +291,11 @@ function openTour() {
   });
 }
 function categoryLabel(categoryId) { return CATEGORIES.find((category) => category.id === categoryId)?.label || categoryId; }
-function categoryIcon(categoryId) { return CATEGORIES.find((category) => category.id === categoryId)?.icon || '✦'; }
+function categoryIconMarkup(categoryId, className = '') {
+  const category = CATEGORIES.find((item) => item.id === categoryId);
+  const icon = CATEGORY_ICON_SVGS[category?.icon] || CATEGORY_ICON_SVGS.reel;
+  return `<svg class="category-icon-svg category-icon-svg--${categoryId} ${className}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${icon}</svg>`;
+}
 function categoryCountLabel(categoryId) {
   const count = categoryCounts[categoryId] || 0;
   return `${count} ${count === 1 ? 'človek' : 'ľudí'}`;
@@ -435,7 +447,7 @@ function initSnowfall() {
 }
 
 function renderTabs() {
-  els.tabs.innerHTML = CATEGORIES.map((category) => `<button class="category-tab ${category.id === activeCategoryId ? 'is-active' : ''} ${hasVotedCategory(category.id) ? 'is-voted' : ''}" type="button" data-category="${category.id}" aria-label="${category.label}${hasVotedCategory(category.id) ? ', už odhlasované' : ''}"><strong><span class="category-name"><span class="category-icon" aria-hidden="true">${category.icon}</span>${category.label}</span><span class="category-check" aria-hidden="true">${hasVotedCategory(category.id) ? '✓' : ''}</span></strong><small>${categoryCountLabel(category.id)}</small></button>`).join('');
+  els.tabs.innerHTML = CATEGORIES.map((category) => `<button class="category-tab ${category.id === activeCategoryId ? 'is-active' : ''} ${hasVotedCategory(category.id) ? 'is-voted' : ''}" type="button" data-category="${category.id}" aria-label="${category.label}${hasVotedCategory(category.id) ? ', už odhlasované' : ''}"><strong><span class="category-name">${categoryIconMarkup(category.id, 'category-tab-icon')}${category.label}</span><span class="category-check" aria-hidden="true">${hasVotedCategory(category.id) ? '✓' : ''}</span></strong><small>${categoryCountLabel(category.id)}</small></button>`).join('');
   els.tabs.querySelectorAll('.category-tab').forEach((tab) => tab.addEventListener('click', () => switchCategory(tab.dataset.category)));
 }
 
@@ -476,7 +488,7 @@ function moveFilm(filmId, tier) {
 function renderBoard() {
   const categoryFilms = filmsInCategory(activeCategoryId);
   const query = els.search.value.trim().toLowerCase();
-  els.title.innerHTML = `<span class="category-heading-icon" aria-hidden="true">${categoryIcon(activeCategoryId)}</span>${categoryLabel(activeCategoryId)}`;
+  els.title.innerHTML = `${categoryIconMarkup(activeCategoryId, 'category-heading-icon')}${categoryLabel(activeCategoryId)}`;
   els.library.innerHTML = '';
   const unranked = categoryFilms.filter((film) => !rankings()[film.id] && film.title.toLowerCase().includes(query));
   els.emptyLibrary.hidden = unranked.length > 0;
@@ -532,7 +544,7 @@ function renderPreview() {
   renderHeroStats();
   els.voteTotal.textContent = `${totalSubmissions} ${totalSubmissions === 1 ? 'hodnotenie' : 'hodnotení'} celkom`;
   els.preview.innerHTML = CATEGORIES.map((category) => `<article class="preview-card">
-    <div class="preview-card-head"><div><h3><span class="category-heading-icon" aria-hidden="true">${category.icon}</span>${category.label}</h3><small class="category-votes">${categoryVoteLabel(category.id)}</small></div><button class="jump-button" type="button" data-jump="${category.id}">Zoraď</button></div>
+    <div class="preview-card-head"><div><h3>${categoryIconMarkup(category.id, 'category-heading-icon')}${category.label}</h3><small class="category-votes">${categoryVoteLabel(category.id)}</small></div><button class="jump-button" type="button" data-jump="${category.id}">Zoraď</button></div>
     <div class="top-three">${previewFilms(category.id).map((item, index) => `<button class="top-three-row" type="button" data-jump="${category.id}"><span class="place">${index + 1}</span><img data-film-id="${item.film.id}" src="${item.film.image}" alt="${item.film.title} — náhľad" /><span class="top-three-title"><strong>${item.film.title}</strong><small>${item.film.year}</small></span><span class="top-three-score">${item.score === null ? '—' : item.score.toFixed(1)}</span></button>`).join('')}</div>
   </article>`).join('');
   els.preview.querySelectorAll('[data-jump]').forEach((button) => button.addEventListener('click', () => goToBuilder(button.dataset.jump)));

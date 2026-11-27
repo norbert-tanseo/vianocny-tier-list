@@ -229,7 +229,6 @@ function openFilmDetail(film, trigger = null) {
       <span class="section-label">${categoryLabel(film.category)} · ${film.year}</span>
       <h2>${film.title}</h2>
       <p>${filmIntro(film)}</p>
-      <span class="film-detail-note">Krátky filmový tip, bez zdržovania tierlistu.</span>
     </div>
   </div>`;
   const image = els.filmDetail.querySelector('img');

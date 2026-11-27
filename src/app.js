@@ -21,7 +21,7 @@ const FILMS = [
   { id: 'legendary-guardians', category: 'animaky', title: 'Legendárna partia', year: 2012, image: 'https://upload.wikimedia.org/wikipedia/en/9/92/Rise_of_the_Guardians_poster.jpg' },
   { id: 'home-alone', category: 'americke', title: 'Sám doma', year: 1990, image: 'https://upload.wikimedia.org/wikipedia/en/7/76/Home_alone_poster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled' },
   { id: 'home-alone-2', category: 'americke', title: 'Sám doma 2: Stratený v New Yorku', year: 1992, image: 'https://upload.wikimedia.org/wikipedia/en/5/50/Home_Alone_2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled' },
-  { id: 'home-alone-3', category: 'americke', title: 'Sám doma 3', year: 1997, image: 'https://www.impawards.com/1997/posters/home_alone_three_xxlg.jpg' },
+  { id: 'home-alone-3', category: 'americke', title: 'Sám doma 3', year: 1997, image: 'https://www.movieposters.com/cdn/shop/products/home_alone_three_ver3_1024x1024.jpg?v=1762962148' },
   { id: 'home-alone-4', category: 'americke', title: 'Sám doma 4', year: 2002, image: 'https://image.tmdb.org/t/p/original/qRktvMOO2QaCL7gvNyvZDoxPOZj.jpg?t=1770616637' },
   { id: 'home-alone-5', category: 'americke', title: 'Sám doma 5: Vianočná lúpež', year: 2012, image: 'https://image.tmdb.org/t/p/original/6bZdqzK3le84IVUIJCppYMG7UeA.jpg' },
   { id: 'home-sweet-home-alone', category: 'americke', title: 'Všade dobre, sám doma najlepšie', year: 2021, image: 'https://image.tmdb.org/t/p/original/fP3VvqUjEBjawxZHL4sYCq2ZdJD.jpg' },
@@ -200,22 +200,6 @@ function nextUnvotedCategoryId(currentCategoryId) {
   const voted = votedCategories();
   return CATEGORIES.find((category) => category.id !== currentCategoryId && !voted.has(category.id))?.id || null;
 }
-function escapeSvg(value) { return String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[character])); }
-function posterPlaceholder(film) {
-  const palette = { animaky: ['#0f4a38', '#d8b15e'], americke: ['#8e2638', '#f0c874'], ceskoslovenske: ['#1e5361', '#e4b766'], europske: ['#24556a', '#e1bf78'], kultove: ['#5d2d3d', '#d5b26c'] }[film.category] || ['#123b2e', '#d0a451'];
-  const words = film.title.split(' ');
-  const lines = [];
-  let line = '';
-  words.forEach((word) => {
-    if ((line + ' ' + word).trim().length > 19 && line) { lines.push(line); line = word; }
-    else line = `${line} ${word}`.trim();
-  });
-  if (line) lines.push(line);
-  const titleLines = lines.slice(0, 3).map((text, index) => `<text x="250" y="${245 + index * 34}" text-anchor="middle" fill="#fffaf1" font-family="Arial,sans-serif" font-size="25" font-weight="700">${escapeSvg(text)}</text>`).join('');
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="500" height="700" viewBox="0 0 500 700"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${palette[0]}"/><stop offset="1" stop-color="${palette[1]}"/></linearGradient></defs><rect width="500" height="700" rx="24" fill="url(#g)"/><circle cx="80" cy="100" r="42" fill="#fffaf1" opacity=".16"/><circle cx="415" cy="135" r="68" fill="#fffaf1" opacity=".12"/><path d="M55 580 C150 480 350 480 445 580" fill="none" stroke="#fffaf1" stroke-width="3" opacity=".35"/><text x="250" y="78" text-anchor="middle" fill="#fffaf1" font-family="Arial,sans-serif" font-size="17" font-weight="700" letter-spacing="3">VIANOČNÝ FILM</text><text x="250" y="150" text-anchor="middle" fill="#fffaf1" font-family="Georgia,serif" font-size="46">✦</text>${titleLines}<text x="250" y="622" text-anchor="middle" fill="#fffaf1" font-family="Arial,sans-serif" font-size="22" opacity=".9">${film.year}</text><text x="250" y="660" text-anchor="middle" fill="#fffaf1" font-family="Arial,sans-serif" font-size="12" letter-spacing="2" opacity=".75">VIANOČNÝ TIER LIST</text></svg>`;
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
 function filmIntro(film) {
   return FILM_DETAILS[film.id] || `Krátka vianočná filmová zastávka z roku ${film.year}.`;
 }
@@ -231,8 +215,6 @@ function openFilmDetail(film, trigger = null) {
       <p>${filmIntro(film)}</p>
     </div>
   </div>`;
-  const image = els.filmDetail.querySelector('img');
-  image.addEventListener('error', () => { image.onerror = null; image.src = posterPlaceholder(film); });
   setDialogLock(true);
   els.filmDialog.showModal();
   requestAnimationFrame(() => window.scrollTo(0, detailScrollPosition));
@@ -361,7 +343,6 @@ function createFilmCard(film) {
   card.dataset.filmId = film.id;
   card.title = film.title;
   card.innerHTML = `<button class="film-card-main" type="button" aria-label="${film.title}, ${film.year}"><img loading="eager" decoding="async" src="${film.image}" alt="${film.title} — náhľad" /><span class="card-meta"><strong>${film.title}</strong><small>${film.year}</small></span></button><button class="film-info-button" type="button" aria-label="O filme ${film.title}">i</button>`;
-  card.querySelector('img').addEventListener('error', (event) => { event.currentTarget.onerror = null; event.currentTarget.src = posterPlaceholder(film); });
   card.addEventListener('dragstart', (event) => { event.dataTransfer.setData('text/plain', film.id); card.classList.add('is-selected'); });
   card.addEventListener('dragend', () => card.classList.remove('is-selected'));
   card.querySelector('.film-card-main').addEventListener('click', () => {
@@ -450,7 +431,6 @@ function renderPreview() {
     <div class="top-three">${previewFilms(category.id).map((item, index) => `<button class="top-three-row" type="button" data-jump="${category.id}"><span class="place">${index + 1}</span><img data-film-id="${item.film.id}" src="${item.film.image}" alt="${item.film.title} — náhľad" /><span class="top-three-title"><strong>${item.film.title}</strong><small>${item.film.year}</small></span><span class="top-three-score">${item.score === null ? '—' : item.score.toFixed(1)}</span></button>`).join('')}</div>
   </article>`).join('');
   els.preview.querySelectorAll('[data-jump]').forEach((button) => button.addEventListener('click', () => goToBuilder(button.dataset.jump)));
-  els.preview.querySelectorAll('img').forEach((image) => image.addEventListener('error', (event) => { event.currentTarget.onerror = null; event.currentTarget.src = posterPlaceholder(filmById[image.dataset.filmId]); }));
 }
 
 function setViewMode(nextView) {

@@ -512,13 +512,13 @@ function aggregateForFilm(filmId) {
   return { votes, total, score: total ? points / total : null };
 }
 
-function previewFilms(categoryId) {
+function previewFilms(categoryId, limit = 3) {
   return filmsInCategory(categoryId).map((film, index) => ({ film, ...aggregateForFilm(film.id), index })).sort((a, b) => {
     if (a.score === null && b.score === null) return a.index - b.index;
     if (a.score === null) return 1;
     if (b.score === null) return -1;
     return b.score - a.score || b.total - a.total || a.index - b.index;
-  }).slice(0, 3);
+  }).slice(0, limit);
 }
 
 function renderHeroStats() {
@@ -538,7 +538,7 @@ function renderPreview() {
   els.voteTotal.textContent = `${totalSubmissions} ${totalSubmissions === 1 ? 'hodnotenie' : 'hodnotení'} celkom`;
   els.preview.innerHTML = CATEGORIES.map((category) => `<article class="preview-card preview-card--${category.id}">
     <div class="preview-card-head"><div><h3 class="category-title category-title--${category.id}">${categoryDisplayMarkup(category)}</h3><small class="category-votes">${categoryVoteLabel(category.id)}</small></div><button class="jump-button" type="button" data-jump="${category.id}">Zoraď</button></div>
-    <div class="top-three">${previewFilms(category.id).map((item, index) => `<button class="top-three-row" type="button" data-jump="${category.id}"><span class="place">${index + 1}</span><img data-film-id="${item.film.id}" src="${item.film.image}" alt="${item.film.title} — náhľad" /><span class="top-three-title"><strong>${item.film.title}</strong><small>${item.film.year}</small></span><span class="top-three-score">${item.score === null ? '—' : item.score.toFixed(1)}</span></button>`).join('')}</div>
+    ${[previewFilms(category.id, 3), previewFilms(category.id, 6).slice(3)].map((items, rowIndex) => items.length ? `<div class="top-three ${rowIndex ? 'top-three--more' : ''}">${items.map((item, index) => `<button class="top-three-row" type="button" data-jump="${category.id}"><span class="place">${rowIndex ? index + 4 : index + 1}</span><img data-film-id="${item.film.id}" src="${item.film.image}" alt="${item.film.title} — náhľad" /><span class="top-three-title"><strong>${item.film.title}</strong><small>${item.film.year}</small></span><span class="top-three-score">${item.score === null ? '—' : item.score.toFixed(1)}</span></button>`).join('')}</div>` : '').join('')}
   </article>`).join('');
   els.preview.querySelectorAll('[data-jump]').forEach((button) => button.addEventListener('click', () => goToBuilder(button.dataset.jump)));
 }

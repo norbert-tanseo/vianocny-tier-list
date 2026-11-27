@@ -25,7 +25,7 @@ Po vytvorení D1 databázy `vianocny-tier-list` spusti `schema.sql` a nastav bin
 
 ## Admin a návrhy
 
-Admin je dostupný priamo na `/admin`; verejná stránka naň neodkazuje. API vyžaduje Cloudflare Pages secret `ADMIN_PASSWORD` (aspoň 12 znakov) a existujúci D1 binding `DB`. Heslo nikdy nedávaj do `wrangler.toml` ani do Gitu. Nastav ho v Cloudflare **Workers & Pages → vianocny-tier-list → Settings → Variables and Secrets → Add → Encrypt**, potom spusti nové nasadenie. Alternatíva cez Wrangler: `npx wrangler pages secret put ADMIN_PASSWORD --project-name vianocny-tier-list`.
+Admin je dostupný priamo na `/admin` (Cloudflare ho presmeruje na `/admin/`); verejná stránka naň neodkazuje. API vyžaduje Cloudflare Pages secret `ADMIN_PASSWORD` (aspoň 12 znakov) a existujúci D1 binding `DB`. Heslo nikdy nedávaj do `wrangler.toml` ani do Gitu. Nastav ho v Cloudflare **Workers & Pages → vianocny-tier-list → Settings → Variables and Secrets → Add → Encrypt**, potom spusti nové nasadenie. Alternatíva cez Wrangler: `npx wrangler pages secret put ADMIN_PASSWORD --project-name vianocny-tier-list`.
 
 Prihlasovacia session používa podpísaný `HttpOnly`, `SameSite=Strict` cookie platný 12 hodín. Po piatich chybných pokusoch sa prihlasovanie z danej IP pozastaví na 15 minút. Verejné návrhy sú obmedzené na päť za hodinu z jednej IP; ukladá sa len hash IP a názov návrhu s kategóriou. Návrhy možno v admin rozhraní označiť ako vybavené. Nové tabuľky sa vytvoria pri prvom použití; sú aj v `schema.sql`.
 

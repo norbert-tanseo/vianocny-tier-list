@@ -46,7 +46,8 @@ const server = createServer(async (req, res) => {
   }
   const requestedPath = requestPath;
   const safePath = normalize(requestedPath).replace(/^([.][.][/\\])+/, '');
-  const relativePath = safePath === '/' || safePath === '\\' ? 'index.html' : safePath.replace(/^[/\\]/, '') === 'admin' ? 'admin.html' : safePath.replace(/^[/\\]/, '');
+  const cleanPath = safePath.replace(/^[/\\]/, '').replace(/\\/g, '/');
+  const relativePath = !cleanPath ? 'index.html' : cleanPath === 'admin' || cleanPath === 'admin/' ? 'admin/index.html' : cleanPath;
   const file = join(root, relativePath);
   try {
     const body = await readFile(file);

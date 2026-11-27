@@ -350,71 +350,6 @@ function renderTabs() {
 
 function isTouchLayout() { return window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 600; }
 
-function attachTouchDrag(card, film) {
-  card.addEventListener('pointerdown', (event) => {
-    if (!isTouchLayout() || event.pointerType === 'mouse' || event.target.closest('.film-info-button')) return;
-    event.preventDefault();
-    card.setPointerCapture(event.pointerId);
-    let ghost = null;
-    let dragging = false;
-    let previewTimer = window.setTimeout(() => card.classList.add('is-touch-preview'), 260);
-
-    const moveGhost = (clientX, clientY) => {
-      if (!ghost) return;
-      ghost.style.left = `${clientX}px`;
-      ghost.style.top = `${clientY}px`;
-    };
-    const updateDropTarget = (clientX, clientY) => {
-      const target = document.elementFromPoint(clientX, clientY)?.closest('.tier-dropzone');
-      document.querySelectorAll('.tier-dropzone').forEach((zone) => zone.classList.toggle('is-over', zone === target));
-      return target;
-    };
-    const finish = (drop = false, clientX = 0, clientY = 0) => {
-      const target = drop ? updateDropTarget(clientX, clientY) : null;
-      document.querySelectorAll('.tier-dropzone').forEach((zone) => zone.classList.remove('is-over'));
-      ghost?.remove();
-      window.clearTimeout(previewTimer);
-      card.classList.remove('is-touch-preview', 'is-touch-dragging');
-      if (target) moveFilm(film.id, target.dataset.tier);
-    };
-    const startDrag = (moveEvent) => {
-      if (dragging) return;
-      dragging = true;
-      window.clearTimeout(previewTimer);
-      card.classList.remove('is-touch-preview');
-      card.classList.add('is-touch-dragging');
-      ghost = card.cloneNode(true);
-      ghost.className = 'film-card touch-drag-ghost';
-      ghost.setAttribute('aria-hidden', 'true');
-      ghost.querySelectorAll('button').forEach((button) => { button.tabIndex = -1; });
-      document.body.appendChild(ghost);
-      moveGhost(moveEvent.clientX, moveEvent.clientY);
-    };
-    const onMove = (moveEvent) => {
-      moveEvent.preventDefault();
-      startDrag(moveEvent);
-      moveGhost(moveEvent.clientX, moveEvent.clientY);
-      updateDropTarget(moveEvent.clientX, moveEvent.clientY);
-    };
-    const onUp = (upEvent) => {
-      card.removeEventListener('pointermove', onMove);
-      card.removeEventListener('pointercancel', onCancel);
-      window.clearTimeout(previewTimer);
-      finish(dragging, upEvent.clientX, upEvent.clientY);
-    };
-    const onCancel = () => {
-      card.removeEventListener('pointermove', onMove);
-      card.removeEventListener('pointerup', onUp);
-      window.clearTimeout(previewTimer);
-      finish();
-    };
-    card.addEventListener('pointermove', onMove);
-    card.addEventListener('pointerup', onUp, { once: true });
-    card.addEventListener('pointercancel', onCancel, { once: true });
-    moveGhost(event.clientX, event.clientY);
-  }, { passive: false });
-}
-
 function createFilmCard(film) {
   const card = document.createElement('article');
   card.className = 'film-card';
@@ -426,14 +361,12 @@ function createFilmCard(film) {
   card.addEventListener('dragstart', (event) => { event.dataTransfer.setData('text/plain', film.id); card.classList.add('is-selected'); });
   card.addEventListener('dragend', () => card.classList.remove('is-selected'));
   card.querySelector('.film-card-main').addEventListener('click', () => {
-    if (isTouchLayout()) return;
     boardNotice = '';
     if (rankings()[film.id]) rankings()[film.id] = null;
     else selectedFilmId = selectedFilmId === film.id ? null : film.id;
     renderBoard();
   });
   card.querySelector('.film-info-button').addEventListener('click', (event) => { event.stopPropagation(); openFilmDetail(film, event.currentTarget); });
-  attachTouchDrag(card, film);
   return card;
 }
 
@@ -463,12 +396,6 @@ function renderBoard() {
     zone.innerHTML = '';
     const tierFilms = categoryFilms.filter((film) => rankings()[film.id] === zone.dataset.tier);
     tierFilms.forEach((film) => zone.appendChild(getFilmCard(film)));
-    if (tierFilms.length) {
-      const summary = document.createElement('span');
-      summary.className = 'tier-summary';
-      summary.textContent = `${tierFilms[0].title}${tierFilms.length > 1 ? ` a ${tierFilms.length - 1} ${tierFilms.length === 2 ? 'ďalší' : 'ďalšie'}` : ''}`;
-      zone.appendChild(summary);
-    }
   });
 
   document.querySelectorAll('.film-card').forEach((card) => {

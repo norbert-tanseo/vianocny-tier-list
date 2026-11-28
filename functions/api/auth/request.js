@@ -26,7 +26,8 @@ export async function onRequestPost({ request, env }) {
   try {
     const category = ['animaky', 'ceskoslovenske', 'americke', 'europske', 'kultove'].includes(body.category) ? body.category : '';
     await sendLoginEmail(env, email, code, category);
-  } catch {
+  } catch (error) {
+    console.error('Login email delivery failed', String(error?.code || ''), String(error?.message || '').slice(0, 240));
     await env.DB.prepare('DELETE FROM login_codes WHERE email = ? AND code_hash = ?').bind(email, codeHash).run();
     return json({ error: 'Kód sa nepodarilo odoslať. Skús to o chvíľu.' }, 503);
   }

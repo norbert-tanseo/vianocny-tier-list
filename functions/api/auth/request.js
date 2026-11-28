@@ -3,7 +3,7 @@ import { sendLoginEmail } from '../../../lib/login-email.js';
 
 export async function onRequestPost({ request, env }) {
   if (!sameOrigin(request)) return json({ error: 'Neplatný pôvod požiadavky.' }, 403);
-  if (!env.DB || !env.SMTP_APP_PASSWORD) return json({ error: 'Prihlasovanie ešte nie je dostupné.' }, 503);
+  if (!env.DB || !env.GMAIL_CLIENT_ID || !env.GMAIL_CLIENT_SECRET || !env.GMAIL_REFRESH_TOKEN) return json({ error: 'Prihlasovanie ešte nie je dostupné.' }, 503);
   let body;
   try { body = await request.json(); } catch { return json({ error: 'Neplatný e-mail.' }, 400); }
   const email = normalizeEmail(body?.email);

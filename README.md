@@ -35,9 +35,9 @@ Prihlásený návštevník zoradí všetky filmy v jednej kategórii do tierov S
 
 ## Prihlasovanie e-mailom
 
-Cloudflare Pages potrebuje D1 binding `DB` a secret `SMTP_APP_PASSWORD`.
-Secret je Google App Password pre `norbert@tanseo.dev`; v repozitári sa nesmie nachádzať.
-Pre tento Google účet musí byť zapnuté dvojstupňové overenie. Aplikácia posiela kódy cez Gmail SMTP (TLS, port 465) pomocou Nodemailera.
+Cloudflare Pages potrebuje D1 binding `DB` a secrety `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `GMAIL_REFRESH_TOKEN`.
+Google OAuth aplikácia potrebuje iba scope `https://www.googleapis.com/auth/gmail.send` pre `norbert@tanseo.dev` s offline prístupom. Secrety sa nesmú nachádzať v repozitári.
+Nodemailer zostavuje MIME e-mail a Gmail API ho odošle cez HTTPS.
 
 Nové tabuľky sa pri prvom volaní API vytvoria automaticky. `schema.sql` obsahuje kompletnú schému pre nové prostredie. Staré anonymné hlasy ostávajú v agregovaných výsledkoch; až nové hlasy sú viazané na overený e-mail.
 

@@ -133,8 +133,6 @@ const FILM_DETAILS = {
 };
 
 const WEIGHTS = { S: 5, A: 4, B: 3, C: 2, D: 1 };
-const NAME_STORAGE_KEY = 'vianocny-tier-list.name';
-const VOTED_STORAGE_KEY = 'vianocny-tier-list.voted-categories';
 const TOUR_STORAGE_KEY = 'vianocny-tier-list.tour-seen';
 const TRIVIA_INITIAL_DELAY = 150000;
 const filmById = Object.fromEntries(FILMS.map((film) => [film.id, film]));
@@ -155,6 +153,10 @@ let triviaTimer = null;
 let triviaDismissTimer = null;
 let tourStep = 0;
 let tourTarget = null;
+let authUser = null;
+let votedByUser = new Set();
+let pendingBuilderCategory = null;
+let tourIsOpening = false;
 
 const els = {
   overviewView: document.querySelector('#overviewView'),
@@ -170,10 +172,6 @@ const els = {
   search: document.querySelector('#searchInput'),
   hint: document.querySelector('#selectionHint'),
   title: document.querySelector('#activeCategoryTitle'),
-  dialog: document.querySelector('#nameDialog'),
-  form: document.querySelector('#nameForm'),
-  name: document.querySelector('#nameInput'),
-  dialogStatus: document.querySelector('#dialogStatus'),
   celebration: document.querySelector('#celebration'),
   celebrationText: document.querySelector('#celebrationText'),
   filmDialog: document.querySelector('#filmDialog'),
@@ -234,7 +232,7 @@ function tourSteps() {
     { selector: '.category-tabs', title: 'Vyber kategóriu', text: 'Začni kategóriou, ktorú chceš zoradiť. Každá má vlastný zoznam titulov.' },
     { selector: '.library-panel', title: 'Vyber titul', text: mobile ? 'Na mobile ťukni na plagát, ktorý chceš zaradiť.' : 'Na počítači chyť plagát a potiahni ho do vybraného tieru.' },
     { selector: '.tier-panel', title: 'Priraď mu tier', text: mobile ? 'Potom ťukni na S až D. Titul sa presunie a môžeš pokračovať ďalším.' : 'Potiahni plagát do S až D. S je povinná vianočná jazda, D je titul, ktorý nechceš znova vidieť.' },
-    { selector: '.submit-row', title: 'Ulož svoj výber', text: 'Keď má každý titul svoje miesto, klikni na uloženie. Stačí už len tvoje meno alebo prezývka.' },
+    { selector: '.submit-row', title: 'Ulož svoj výber', text: 'Keď má každý titul svoje miesto, ulož tierlist. Každú kategóriu môžeš hodnotiť raz.' },
   ];
 }
 function markTourSeen() {
@@ -277,7 +275,9 @@ function openTour() {
   let hasSeen = false;
   try { hasSeen = localStorage.getItem(TOUR_STORAGE_KEY) === '1'; } catch { /* Storage may be unavailable. */ }
   if (hasSeen) return;
+  tourIsOpening = true;
   goToBuilder(CATEGORIES[0].id);
+  tourIsOpening = false;
   tourStep = 0;
   els.tourLayer.hidden = false;
   window.addEventListener('resize', positionTourTarget);
@@ -300,15 +300,9 @@ function categoryVoteLabel(categoryId) {
   const count = categoryCounts[categoryId] || 0;
   return count === 1 ? '1 človek hodnotil' : `${count} ľudí hodnotilo`;
 }
-function votedCategories() {
-  try { return new Set(JSON.parse(localStorage.getItem(VOTED_STORAGE_KEY) || '[]')); } catch { return new Set(); }
-}
-function saveVotedCategory(categoryId) {
-  const voted = votedCategories();
-  voted.add(categoryId);
-  try { localStorage.setItem(VOTED_STORAGE_KEY, JSON.stringify([...voted])); } catch { /* Storage may be unavailable. */ }
-}
-function hasVotedCategory(categoryId) { return votedCategories().has(categoryId); }
+function votedCategories() { return votedByUser; }
+function saveVotedCategory(categoryId) { votedByUser.add(categoryId); }
+function hasVotedCategory(categoryId) { return votedByUser.has(categoryId); }
 function nextUnvotedCategoryId(currentCategoryId) {
   const voted = votedCategories();
   return CATEGORIES.find((category) => category.id !== currentCategoryId && !voted.has(category.id))?.id || null;
@@ -568,6 +562,11 @@ function setViewMode(nextView, scrollBehavior = 'smooth') {
 }
 
 function goToBuilder(categoryId = activeCategoryId) {
+  if (!authUser && !tourIsOpening) {
+    pendingBuilderCategory = categoryId;
+    openAuth();
+    return;
+  }
   if (categoryId && rankingsByCategory[categoryId]) activeCategoryId = categoryId;
   selectedFilmId = null;
   boardNotice = '';
@@ -600,6 +599,138 @@ async function loadResults() {
   } catch { /* Preview can still be used without the API. */ }
 }
 
+const authDialog = document.querySelector('#authDialog');
+const authStatus = document.querySelector('#authStatus');
+const authEmail = document.querySelector('#authEmail');
+const authCode = document.querySelector('#authCode');
+
+function updateAccountUI() {
+  const trigger = document.querySelector('#accountTrigger');
+  trigger.textContent = authUser ? authUser.email : 'Prihlásiť sa';
+  trigger.title = authUser ? 'Tvoj účet' : 'Prihlásiť sa';
+  document.querySelector('#authTitle').textContent = authUser ? 'Tvoj profil' : 'Prihlás sa e-mailom';
+  document.querySelector('#authCopy').hidden = Boolean(authUser);
+  document.querySelector('#emailForm').hidden = Boolean(authUser);
+  document.querySelector('#codeForm').hidden = true;
+  document.querySelector('#profilePanel').hidden = !authUser;
+  if (authUser) {
+    document.querySelector('#profileEmail').textContent = authUser.email;
+    document.querySelector('#profileName').value = authUser.name || '';
+  }
+  renderTabs();
+  renderBoard();
+  renderPreview();
+}
+
+function openAuth() {
+  updateAccountUI();
+  authStatus.textContent = '';
+  if (!authDialog.open) authDialog.showModal();
+  setDialogLock(true);
+  window.setTimeout(() => (authUser ? document.querySelector('#profileName') : authEmail).focus(), 50);
+}
+
+async function loadSession() {
+  try {
+    const response = await fetch('/api/auth/session', { credentials: 'same-origin' });
+    if (!response.ok) return;
+    const data = await response.json();
+    authUser = data.user || null;
+    votedByUser = new Set(data.votedCategories || []);
+    if (!authDialog.open || authUser) updateAccountUI();
+  } catch { /* Session can be retried on login. */ }
+}
+
+async function authRequest(path, options = {}) {
+  const response = await fetch(path, { credentials: 'same-origin', ...options, headers: { 'content-type': 'application/json', ...(options.headers || {}) } });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || 'Skús to znova.');
+  return data;
+}
+
+document.querySelector('#accountTrigger').addEventListener('click', openAuth);
+document.querySelector('#authClose').addEventListener('click', () => authDialog.close());
+authDialog.addEventListener('close', () => setDialogLock(false));
+document.querySelector('#emailForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector('[type="submit"]');
+  button.disabled = true;
+  button.textContent = 'Posielam…';
+  authStatus.textContent = '';
+  try {
+    await authRequest('/api/auth/request', { method: 'POST', body: JSON.stringify({ email: authEmail.value, category: pendingBuilderCategory }) });
+    document.querySelector('#emailForm').hidden = true;
+    document.querySelector('#codeForm').hidden = false;
+    document.querySelector('#authTitle').textContent = 'Pozri svoj e-mail';
+    document.querySelector('#authCopy').textContent = `Kód sme poslali na ${authEmail.value.trim()}. Platí 10 minút.`;
+    authCode.focus();
+  } catch (error) { authStatus.textContent = error.message; }
+  finally { button.disabled = false; button.textContent = 'Poslať kód'; }
+});
+document.querySelector('#changeEmail').addEventListener('click', () => {
+  document.querySelector('#emailForm').hidden = false;
+  document.querySelector('#codeForm').hidden = true;
+  document.querySelector('#authTitle').textContent = 'Prihlás sa e-mailom';
+  authStatus.textContent = '';
+  authEmail.focus();
+});
+document.querySelector('#pasteCode').addEventListener('click', async () => {
+  try { authCode.value = (await navigator.clipboard.readText()).replace(/\D/g, '').slice(0, 6); authCode.focus(); }
+  catch { authStatus.textContent = 'Vloženie nie je povolené. Podrž pole a vlož kód ručne.'; }
+});
+document.querySelector('#codeForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector('[type="submit"]');
+  button.disabled = true;
+  button.textContent = 'Overujem…';
+  authStatus.textContent = '';
+  try {
+    const data = await authRequest('/api/auth/verify', { method: 'POST', body: JSON.stringify({ email: authEmail.value, code: authCode.value }) });
+    authUser = data.user;
+    votedByUser = new Set(data.votedCategories || []);
+    updateAccountUI();
+    authDialog.close();
+    if (pendingBuilderCategory) { const category = pendingBuilderCategory; pendingBuilderCategory = null; goToBuilder(category); }
+  } catch (error) { authStatus.textContent = error.message; }
+  finally { button.disabled = false; button.textContent = 'Prihlásiť sa'; }
+});
+document.querySelector('#profileForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector('[type="submit"]');
+  button.disabled = true;
+  authStatus.textContent = '';
+  try {
+    const data = await authRequest('/api/auth/session', { method: 'PATCH', body: JSON.stringify({ name: document.querySelector('#profileName').value }) });
+    authUser = data.user;
+    authStatus.textContent = 'Meno je uložené.';
+  } catch (error) { authStatus.textContent = error.message; }
+  finally { button.disabled = false; }
+});
+document.querySelector('#logoutButton').addEventListener('click', async () => {
+  await authRequest('/api/auth/session', { method: 'DELETE' }).catch(() => {});
+  authUser = null;
+  votedByUser = new Set();
+  authDialog.close();
+  setViewMode('overview');
+  updateAccountUI();
+});
+
+const loginLink = new URL(location.href);
+const loginParams = new URLSearchParams(loginLink.hash.slice(1));
+const linkCode = loginParams.get('login_code');
+const linkEmail = loginParams.get('login_email');
+if (linkCode && linkEmail) {
+  const continueCategory = loginParams.get('continue');
+  if (CATEGORIES.some((category) => category.id === continueCategory)) pendingBuilderCategory = continueCategory;
+  history.replaceState(null, '', loginLink.pathname + loginLink.search);
+  authEmail.value = linkEmail;
+  authCode.value = linkCode;
+  openAuth();
+  document.querySelector('#emailForm').hidden = true;
+  document.querySelector('#codeForm').hidden = false;
+  document.querySelector('#codeForm').requestSubmit();
+}
+
 els.search.addEventListener('input', renderBoard);
 document.querySelectorAll('.tier-dropzone').forEach((zone) => {
   zone.addEventListener('dragover', (event) => { event.preventDefault(); zone.classList.add('is-over'); });
@@ -618,36 +749,25 @@ document.querySelectorAll('.tier-row').forEach((row) => {
 els.overviewNav.addEventListener('click', () => setViewMode('overview'));
 els.builderNav.addEventListener('click', () => goToBuilder());
 document.querySelector('#resetBoard').addEventListener('click', () => { rankingsByCategory[activeCategoryId] = {}; selectedFilmId = null; boardNotice = ''; renderBoard(); });
-document.querySelector('#submitButton').addEventListener('click', () => {
+document.querySelector('#submitButton').addEventListener('click', async () => {
+  if (!authUser) { openAuth(); return; }
   if (hasVotedCategory(activeCategoryId)) return;
-  els.dialogStatus.textContent = '';
-  try { els.name.value = localStorage.getItem(NAME_STORAGE_KEY) || ''; } catch { els.name.value = ''; }
-  setDialogLock(true);
-  els.dialog.showModal();
-  window.setTimeout(() => els.name.focus(), 50);
-});
-
-els.form.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  if (hasVotedCategory(activeCategoryId)) {
-    els.dialogStatus.textContent = 'V tejto kategórii už máš hlas uložený.';
-    return;
-  }
-  const name = els.name.value.trim();
-  if (!name) return;
-  const submit = els.form.querySelector('.dialog-submit');
+  const submit = els.submit;
   submit.disabled = true;
   submit.textContent = 'Odosielam…';
   try {
-    const response = await fetch('/api/votes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name, categoryId: activeCategoryId, rankings: rankings() }) });
-    if (!response.ok) throw new Error('offline');
+    const response = await fetch('/api/votes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ categoryId: activeCategoryId, rankings: rankings() }) });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      if (response.status === 401) { authUser = null; openAuth(); }
+      if (response.status === 409) { await loadSession(); renderBoard(); }
+      throw new Error(errorData.error || 'Nepodarilo sa uložiť.');
+    }
     const data = await response.json();
     results = data.results || results;
     categoryCounts = { ...categoryCounts, ...(data.categoryCounts || {}) };
     totalSubmissions = Number(data.submissions || totalSubmissions);
-    try { localStorage.setItem(NAME_STORAGE_KEY, name); } catch { /* Storage may be unavailable. */ }
     saveVotedCategory(activeCategoryId);
-    els.dialog.close();
     const submittedCategoryId = activeCategoryId;
     const nextCategoryId = nextUnvotedCategoryId(submittedCategoryId);
     renderTabs();
@@ -666,16 +786,14 @@ els.form.addEventListener('submit', async (event) => {
         }
       }, 220);
     }, 950);
-  } catch {
-    els.dialogStatus.textContent = 'Nepodarilo sa uložiť. Skús znova.';
+  } catch (error) {
+    boardNotice = error.message || 'Nepodarilo sa uložiť. Skús znova.';
+    renderBoard();
   } finally {
     submit.disabled = false;
-    submit.textContent = 'Odoslať';
+    renderBoard();
   }
 });
-
-document.querySelector('.dialog-close').addEventListener('click', () => els.dialog.close());
-els.dialog.addEventListener('close', () => setDialogLock(false));
 els.filmDialog.addEventListener('close', () => {
   setDialogLock(false);
   window.scrollTo(0, detailScrollPosition);
@@ -694,6 +812,7 @@ renderPreview();
 setViewMode('overview');
 initSnowfall();
 loadResults();
+loadSession();
 scheduleTrivia(TRIVIA_INITIAL_DELAY);
 window.setTimeout(openTour, 520);
 

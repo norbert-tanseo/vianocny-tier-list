@@ -12,7 +12,7 @@ Lokálny preview sleduje zmeny v `src/`, po uložení automaticky rebuildne str�
 
 Ak je stránka otvorená bez Cloudflare Functions, zobrazí sa demo komunitné skóre. Pre lokálnu D1 databázu sa dá použiť Cloudflare Wrangler a `schema.sql`.
 
-Lokálny statický preview neobsluhuje `/api/*`; formulár návrhov a prihlásenie do admina fungujú pri Cloudflare Pages Functions (alebo cez `wrangler pages dev`).
+Lokálny statický preview neobsluhuje `/api/*`; hlasovanie, návrhy a prihlásenie fungujú pri Cloudflare Pages Functions (alebo cez `wrangler pages dev`).
 
 ## Cloudflare Pages
 
@@ -31,5 +31,14 @@ Prihlasovacia session používa podpísaný `HttpOnly`, `SameSite=Strict` cookie
 
 ## Metodológia
 
-Každý návštevník zoradí všetky filmy v jednej kategórii do tierov S–D a môže hlas uložiť pod menom alebo prezývkou. Počet titulov v jednom tiere nie je obmedzený; dôležité je, aby každý titul skončil práve v jednom tiere. Komunitné skóre je vážený priemer: S = 5, A = 4, B = 3, C = 2, D = 1. Kategórie sú Animáky, Americké, Československé, Britské & európske a Kultové & netradičné.
+Prihlásený návštevník zoradí všetky filmy v jednej kategórii do tierov S–D. Meno alebo prezývku si môže nastaviť v profile. Počet titulov v jednom tiere nie je obmedzený; dôležité je, aby každý titul skončil práve v jednom tiere. Komunitné skóre je vážený priemer: S = 5, A = 4, B = 3, C = 2, D = 1. Kategórie sú Animáky, Americké, Československé, Britské & európske a Kultové & netradičné.
 
+## Prihlasovanie e-mailom
+
+Cloudflare Pages potrebuje D1 binding `DB` a secret `SMTP_APP_PASSWORD`.
+Secret je Google App Password pre `norbert@tanseo.dev`; v repozitári sa nesmie nachádzať.
+Pre tento Google účet musí byť zapnuté dvojstupňové overenie. Aplikácia posiela kódy cez Gmail SMTP (TLS, port 465) pomocou Nodemailera.
+
+Nové tabuľky sa pri prvom volaní API vytvoria automaticky. `schema.sql` obsahuje kompletnú schému pre nové prostredie. Staré anonymné hlasy ostávajú v agregovaných výsledkoch; až nové hlasy sú viazané na overený e-mail.
+
+Každý overený e-mail môže odoslať jeden hlas v každej kategórii. Rôzne e-mailové adresy tej istej osoby nie je možné bez ďalšieho overenia identity spojiť.

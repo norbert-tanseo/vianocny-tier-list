@@ -1,4 +1,5 @@
 const VALID_TIERS = new Set(['S', 'A', 'B', 'C', 'D']);
+import { currentUser, ensureAuthTables, sameOrigin } from '../../lib/user-auth.js';
 export const FILM_CATEGORY = {
   klaus: 'animaky', grinch: 'animaky', 'grinch-animated': 'animaky', 'polar-express': 'animaky', 'christmas-carol': 'animaky', 'legendary-guardians': 'animaky',
   'nightmare-before-christmas': 'animaky', 'arthur-christmas': 'animaky', 'mickey-christmas-carol': 'animaky', snowman: 'animaky', 'robin-robin': 'animaky', 'the-star': 'animaky',
@@ -40,21 +41,31 @@ export async function onRequestGet({ env }) {
 
 export async function onRequestPost({ request, env }) {
   if (!env.DB) return json({ error: 'Database is not configured yet.' }, 503);
+  if (!sameOrigin(request)) return json({ error: 'Neplatný pôvod požiadavky.' }, 403);
+  await ensureAuthTables(env.DB);
+  const user = await currentUser(request, env.DB);
+  if (!user) return json({ error: 'Najprv sa prihlás.' }, 401);
   let body;
   try { body = await request.json(); } catch { return json({ error: 'Invalid JSON.' }, 400); }
-  const name = typeof body.name === 'string' ? body.name.trim().slice(0, 40) : '';
+  const name = user.display_name || 'Filmový fanúšik';
   const categoryId = typeof body.categoryId === 'string' ? body.categoryId : '';
   const rankings = body.rankings && typeof body.rankings === 'object' ? body.rankings : {};
-  if (!name) return json({ error: 'Name is required.' }, 400);
   const entries = Object.entries(rankings);
   const expectedFilms = Object.entries(FILM_CATEGORY).filter(([, filmCategory]) => filmCategory === categoryId).map(([filmId]) => filmId);
   const completeCategory = expectedFilms.length === entries.length && expectedFilms.every((filmId) => rankings[filmId]);
   const validEntries = entries.every(([filmId, tier]) => VALID_FILMS.has(filmId) && FILM_CATEGORY[filmId] === categoryId && VALID_TIERS.has(tier));
   if (!categoryId || !completeCategory || !validEntries) return json({ error: 'Complete rankings with every title assigned to one tier are required.' }, 400);
 
+  const previous = await env.DB.prepare('SELECT 1 FROM user_votes WHERE user_id = ? AND category_id = ?').bind(user.id, categoryId).first();
+  if (previous) return json({ error: 'Túto kategóriu si už hodnotil(a).' }, 409);
+
   const submissionId = crypto.randomUUID();
-  const statements = entries.map(([filmId, tier]) => env.DB.prepare('INSERT INTO votes (submission_id, display_name, film_id, tier) VALUES (?, ?, ?, ?)').bind(submissionId, name, filmId, tier));
-  await env.DB.batch(statements);
+  const statements = [env.DB.prepare('INSERT INTO user_votes(user_id, category_id, submission_id, created_at) VALUES (?, ?, ?, ?)').bind(user.id, categoryId, submissionId, Math.floor(Date.now() / 1000)), ...entries.map(([filmId, tier]) => env.DB.prepare('INSERT INTO votes (submission_id, display_name, film_id, tier) VALUES (?, ?, ?, ?)').bind(submissionId, name, filmId, tier))];
+  try { await env.DB.batch(statements); }
+  catch (error) {
+    if (/UNIQUE constraint failed.*user_votes/.test(String(error))) return json({ error: 'Túto kategóriu si už hodnotil(a).' }, 409);
+    throw error;
+  }
   return json({ ok: true, ...(await readResults(env.DB)) }, 201);
 }
 

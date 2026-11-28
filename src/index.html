@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#13251e" />
+    <meta name="referrer" content="no-referrer" />
     <meta name="description" content="Vianočný tier list filmov a rozprávok." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Vianočný tier list" />
@@ -43,6 +44,7 @@
         <button class="view-nav-button is-active" id="overviewNav" type="button">Prehľad</button>
         <button class="view-nav-button" id="builderNav" type="button">Tvoj tierlist</button>
       </nav>
+      <button class="account-trigger" id="accountTrigger" type="button">Prihlásiť sa</button>
     </header>
 
     <main id="top" class="page">
@@ -179,15 +181,30 @@
       </div>
     </div>
 
-    <dialog class="name-dialog" id="nameDialog">
-      <form method="dialog" id="nameForm">
-        <button class="dialog-close" value="cancel" aria-label="Zavrieť">×</button>
-        <span class="section-label">Uložiť tierlist</span>
-        <h2>Tvoje meno</h2>
-        <input id="nameInput" name="name" maxlength="40" required placeholder="Meno alebo prezývka" autocomplete="nickname" />
-        <button class="primary-button dialog-submit" value="submit" type="submit">Odoslať</button>
-        <p class="dialog-status" id="dialogStatus" role="status"></p>
-      </form>
+    <dialog class="name-dialog auth-dialog" id="authDialog" aria-labelledby="authTitle">
+      <div class="auth-shell">
+        <button class="dialog-close" id="authClose" type="button" aria-label="Zavrieť">×</button>
+        <span class="section-label">Vianočný tier list</span>
+        <h2 id="authTitle">Prihlás sa e-mailom</h2>
+        <p class="auth-copy" id="authCopy">Pošleme ti šesťmiestny kód. Žiadne heslo.</p>
+        <form id="emailForm" class="auth-form">
+          <label for="authEmail">Tvoj e-mail</label>
+          <input id="authEmail" type="email" inputmode="email" autocomplete="email" placeholder="tvoj@email.sk" required />
+          <button class="primary-button dialog-submit" type="submit">Poslať kód</button>
+        </form>
+        <form id="codeForm" class="auth-form" hidden>
+          <label for="authCode">Kód z e-mailu</label>
+          <div class="code-entry"><input id="authCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" required /><button id="pasteCode" type="button">Vložiť</button></div>
+          <button class="primary-button dialog-submit" type="submit">Prihlásiť sa</button>
+          <button class="auth-link" id="changeEmail" type="button">Zmeniť e-mail</button>
+        </form>
+        <div id="profilePanel" hidden>
+          <p class="profile-email" id="profileEmail"></p>
+          <form id="profileForm" class="auth-form"><label for="profileName">Tvoje meno</label><input id="profileName" maxlength="40" autocomplete="nickname" placeholder="Meno alebo prezývka" required /><button class="primary-button dialog-submit" type="submit">Uložiť meno</button></form>
+          <button class="auth-link" id="logoutButton" type="button">Odhlásiť sa</button>
+        </div>
+        <p class="dialog-status" id="authStatus" role="status" aria-live="polite"></p>
+      </div>
     </dialog>
 
     <dialog class="film-dialog" id="filmDialog">

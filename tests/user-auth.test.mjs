@@ -36,7 +36,7 @@ test('Gmail API sends the composed message with a send-only access token', async
     assert.equal(calls[1].options.headers.authorization, 'Bearer test-token');
     const message = Buffer.from(JSON.parse(calls[1].options.body).raw, 'base64url').toString('utf8');
     assert.match(message, /viewer@example\.com/);
-    assert.match(message, /norbert@tanseo\.dev/);
+    assert.match(message, /truecodes\.dev@gmail\.com/);
   } finally {
     globalThis.fetch = originalFetch;
   }
